@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_trails">
+
+    <fragment
+        android:id="@+id/navigation_trails"
+        android:name="com.example.hikinghelperni.ui.trails.TrailsFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_trails" />
+
+    <fragment
+        android:id="@+id/navigation_log_hikes"
+        android:name="com.example.hikinghelperni.ui.log_hikes.LogHikesFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_log_hikes" />
+
+    <fragment
+        android:id="@+id/navigation_saved_lists"
+        android:name="com.example.hikinghelperni.ui.saved_lists.SavedListsFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_saved_lists" />
+</navigation>
