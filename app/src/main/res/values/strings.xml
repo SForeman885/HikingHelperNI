@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Hiking Helper NI</string>
+    <string name="title_home">Trails</string>
+    <string name="title_dashboard">Log Hikes</string>
+    <string name="title_notifications">Saved Trails</string>
+    <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
+    <string name="facebook_application_id" translatable="false">599897484620268</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb599897484620268</string>
+</resources>
