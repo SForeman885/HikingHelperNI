@@ -32,6 +32,7 @@ public class SavedListsFragment extends Fragment {
                 textView.setText(s);
             }
         });
+        setHasOptionsMenu(true);
         return root;
     }
 

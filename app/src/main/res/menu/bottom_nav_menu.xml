@@ -9,11 +9,11 @@
     <item
         android:id="@+id/navigation_log_hikes"
         android:icon="@drawable/ic_log_hikes_black_24dp"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_log_hikes" />
 
     <item
         android:id="@+id/navigation_saved_lists"
         android:icon="@drawable/ic_saved_lists_black_24dp"
-        android:title="@string/title_notifications" />
+        android:title="@string/title_saved_lists" />
 
 </menu>

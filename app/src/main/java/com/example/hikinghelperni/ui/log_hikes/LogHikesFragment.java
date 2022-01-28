@@ -8,10 +8,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.databinding.FragmentLogHikesBinding;
 
 public class LogHikesFragment extends Fragment {
@@ -32,6 +35,11 @@ public class LogHikesFragment extends Fragment {
                 textView.setText(s);
             }
         });
+        setHasOptionsMenu(true);
+        ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        //set back icon and make visible on left of action bar
+        ab.setHomeAsUpIndicator(R.drawable.ic_back_arrow_black_24);
+        ab.setDisplayHomeAsUpEnabled(true);
         return root;
     }
 

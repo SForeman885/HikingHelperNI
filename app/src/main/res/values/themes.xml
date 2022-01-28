@@ -11,18 +11,19 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
     </style>
     <style name="Theme.SignIn" parent="Theme.AppCompat.Light">
-        <!--below line is for setting our text color to black-->
+        <!--Changing Sign In UI to follow colour scheme of app-->
         <item name="android:textColor">@color/black</item>
-        <!--we are setting our primary color to green-->
         <item name="colorPrimary">@color/green</item>
-        <!--we are setting our primary color dark to green-->
         <item name="colorPrimaryDark">@color/dark_green</item>
-        <!--we are setting our edittext color to black-->
         <item name="android:editTextColor">@color/black</item>
-        <!--we are setting our window background color to white-->
         <item name="android:background">@color/white</item>
+    </style>
+    <!--Changing Overflow Icon styling to act as user profile menu-->
+    <style name="OverFlow" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="android:src">@drawable/ic_profile_black_24dp</item>
+        <item name="android:paddingRight">10dp</item>
     </style>
 </resources>
