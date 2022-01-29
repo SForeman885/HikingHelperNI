@@ -7,11 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.hikinghelperni.R;
@@ -29,12 +27,7 @@ public class LogHikesFragment extends Fragment {
         View root = binding.getRoot();
 
         final TextView textView = binding.textLogHikes;
-        logHikesViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        logHikesViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         setHasOptionsMenu(true);
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         //set back icon and make visible on left of action bar

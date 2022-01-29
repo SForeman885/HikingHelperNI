@@ -26,12 +26,7 @@ public class TrailsFragment extends Fragment {
         View root = binding.getRoot();
 
         final TextView textView = binding.textTrails;
-        trailsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        trailsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         setHasOptionsMenu(true);
         return root;
     }
