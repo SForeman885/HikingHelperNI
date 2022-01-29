@@ -4,11 +4,14 @@
         <!--Items for profile drop down list-->
         <item
             android:id="@+id/action_profile"
-            android:title="@string/profile_option"/>
+            android:title="@string/profile_option"
+            android:onClick="onProfileItemClick"/>
         <item
             android:id="@+id/action_sign_out"
-            android:title="@string/profile_option_sign_out"/>
+            android:title="@string/profile_option_sign_out"
+            android:onClick="onProfileItemClick"/>
         <item
             android:id="@+id/action_sign_in"
-            android:title="@string/profile_option_sign_in"/>
+            android:title="@string/profile_option_sign_in"
+            android:onClick="onProfileItemClick"/>
 </menu>
