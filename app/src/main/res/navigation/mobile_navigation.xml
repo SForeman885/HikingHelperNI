@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_log_hikes"
-        android:name="com.example.hikinghelperni.ui.log_hikes.LogHikesFragment"
+        android:name="com.example.hikinghelperni.ui.view_logs.ViewLogsFragment"
         android:label="@string/title_log_hikes"
-        tools:layout="@layout/fragment_log_hikes" />
+        tools:layout="@layout/fragment_view_logs" />
 
     <fragment
         android:id="@+id/navigation_saved_lists"
