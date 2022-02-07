@@ -14,12 +14,12 @@
     <fragment
         android:id="@+id/navigation_log_hikes"
         android:name="com.example.hikinghelperni.ui.log_hikes.LogHikesFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_log_hikes"
         tools:layout="@layout/fragment_log_hikes" />
 
     <fragment
         android:id="@+id/navigation_saved_lists"
         android:name="com.example.hikinghelperni.ui.saved_lists.SavedListsFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_saved_lists"
         tools:layout="@layout/fragment_saved_lists" />
 </navigation>

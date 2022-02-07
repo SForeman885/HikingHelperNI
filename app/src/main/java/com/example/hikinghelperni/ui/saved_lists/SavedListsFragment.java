@@ -26,12 +26,8 @@ public class SavedListsFragment extends Fragment {
         View root = binding.getRoot();
 
         final TextView textView = binding.textSavedLists;
-        savedListsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        savedListsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        setHasOptionsMenu(true);
         return root;
     }
 
