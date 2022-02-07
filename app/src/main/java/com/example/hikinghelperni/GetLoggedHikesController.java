@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 public class GetLoggedHikesController {
 
+    //use the list of documents to each fill a CustomLoggedHike object
+    //which can be used by the application
     public List<CustomLoggedHike> getLoggedHikes(List<DocumentSnapshot> retrievedDocuments) {
         return retrievedDocuments.stream()
                 .map(doc -> new CustomLoggedHike(doc.get("trailName").toString(), doc.getLong("date"), Double.parseDouble(doc.get("length").toString()), Integer.parseInt(doc.get("timeTaken").toString()), doc.get("difficulty").toString()))

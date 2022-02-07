@@ -106,6 +106,7 @@ public class LogHikesFragment extends Fragment {
                         difficulty = "Medium";
                     }
                     CustomLoggedHike log = new CustomLoggedHike(trailName, date, Double.parseDouble(length), timeTaken, difficulty);
+                    //logMapper() is used to convert the object into a Map that Firebase will accept
                     db.addNewCustomLog(log.LogMapper(), user.getUid());
 
                 }
