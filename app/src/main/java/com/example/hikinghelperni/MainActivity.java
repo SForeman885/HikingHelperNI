@@ -7,11 +7,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.hikinghelperni.ui.view_logs.ViewLogsFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public void onProfileItemClick(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_profile) {
             Toast.makeText(MainActivity.this, "you clicked on button1",
                     Toast.LENGTH_SHORT).show();
@@ -69,6 +72,26 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, FirebaseUIActivity.class);
             startActivity(intent);
         }
+        if(item.getItemId() == android.R.id.home) {
+            FragmentManager navFragmentManager = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
+            int count = navFragmentManager.getBackStackEntryCount();
+            String previousFragmentName = navFragmentManager.getBackStackEntryAt(count - 1).getName();
+            if(previousFragmentName.equals("ViewLogsFragment")) {
+                Fragment previousFragment = new ViewLogsFragment();
+                NavigateBackToPreviousFragment(navFragmentManager, previousFragment);
+            }
+            else if(previousFragmentName.equals("HikeViewFragment")) {
+                //NavigateBackToPreviousFragment(navFragmentManager, previousFragment);
+            }
+        }
+        return false;
+    }
+
+    private void NavigateBackToPreviousFragment(FragmentManager navFragmentManager, Fragment previousFragment) {
+        navFragmentManager.popBackStack();
+        navFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment_activity_main, previousFragment)
+                .commit();
     }
 
     public void signOut() {
