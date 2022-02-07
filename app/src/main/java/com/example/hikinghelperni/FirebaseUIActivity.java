@@ -2,6 +2,7 @@ package com.example.hikinghelperni;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,9 +22,9 @@ public class FirebaseUIActivity extends AppCompatActivity {
     // variables for Firebase Auth
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    //New instance of my FirebaseDatabase class
+    //new instance of my FirebaseDatabase class
     private FirebaseDatabase db = new FirebaseDatabase();
-    // list of all login options I want to set up
+    //list of all login options I want to set up
     List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.EmailBuilder().build(),
             new AuthUI.IdpConfig.GoogleBuilder().build(),
@@ -57,12 +58,10 @@ public class FirebaseUIActivity extends AppCompatActivity {
                 // firebaseuiactivity which is displaying our login ui.
                 finish();
             } else {
-                // this method is called when our
-                // user is not authenticated previously.
+                // call when user is not authenticated previously.
                 Intent signInIntent =
                         // get our authentication instance.
                         AuthUI.getInstance()
-                                // below line is used to
                                 // create our sign in intent
                                 .createSignInIntentBuilder()
 
@@ -72,13 +71,10 @@ public class FirebaseUIActivity extends AppCompatActivity {
                                 .setIsSmartLockEnabled(false)
 
                                 .setAvailableProviders(providers)
-
                                 // customizing theme and adding logo
                                 .setTheme(R.style.Theme_SignIn)
                                 .setLogo(R.drawable.logo)
-                                // after setting our theme and logo
-                                // we are calling a build() method
-                                // to build our login screen.
+                                // build our login screen.
                                 .build();
                 signInLauncher.launch(signInIntent);
             }
@@ -93,26 +89,28 @@ public class FirebaseUIActivity extends AppCompatActivity {
             db.addNewUser(user.getUid());
             // ...
         } else {
-            // Sign in failed. If response is null the user canceled the
-            // sign-in flow using the back button. Otherwise check
-            // response.getError().getErrorCode() and handle the error.
-            // ...
+            //if response is null the user canceled the sign-in flow using the back button.
+            if(response == null) {
+                Log.d(this.getClass().toString(), "Sign Up cancelled by user");
+            }
+            else {
+                //else log error returned by firebase
+                Log.d(this.getClass().toString(), response.getError().toString());
+            }
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // we are calling our auth
-        // listener method on app resume.
+        //we are calling our auth listener method on app resume.
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // here we are calling remove auth
-        // listener method on stop.
+        //here we are calling remove auth listener method on stop.
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
     }
 }
