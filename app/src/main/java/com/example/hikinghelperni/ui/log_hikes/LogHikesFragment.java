@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.hikinghelperni.CustomLoggedHike;
@@ -21,6 +22,7 @@ import com.example.hikinghelperni.FirebaseDatabase;
 import com.example.hikinghelperni.LogHikesValidator;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.databinding.FragmentLogHikesBinding;
+import com.example.hikinghelperni.ui.view_logs.ViewLogsFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -100,7 +102,9 @@ public class LogHikesFragment extends Fragment {
                         textView.setError(validatorResponse.get(key));
                     }
                 } else {
-                    int timeTaken = (Integer.parseInt(hours) * 60) + Integer.parseInt(minutes);
+                    int hoursValue = hours.isEmpty() ? 0 : Integer.parseInt(hours); //this will handle an empty hours/minutes input from user
+                    int minutesValue = minutes.isEmpty() ? 0 : Integer.parseInt(minutes);
+                    int timeTaken = (hoursValue * 60) + minutesValue;
                     //if none selected autoselect medium as this option will not affect the speed calculation
                     if (difficulty.equals("Trail Difficulty")) {
                         difficulty = "Medium";
@@ -108,7 +112,12 @@ public class LogHikesFragment extends Fragment {
                     CustomLoggedHike log = new CustomLoggedHike(trailName, date, Double.parseDouble(length), timeTaken, difficulty);
                     //logMapper() is used to convert the object into a Map that Firebase will accept
                     db.addNewCustomLog(log.LogMapper(), user.getUid());
-
+                    ViewLogsFragment nextFragment = new ViewLogsFragment();
+                    FragmentManager fragmentManager = getParentFragmentManager();
+                    fragmentManager.popBackStack();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.nav_host_fragment_activity_main, nextFragment)
+                            .commit();
                 }
             }
             else {

@@ -33,11 +33,13 @@ public class LogHikesValidator {
         else if(!validateTrailLength(Double.parseDouble(length))) {
             validationResult.put(R.id.editTextNumberTrailLength, INVALID_LENGTH);
         }
-        if(hours.isEmpty() && minutes.isEmpty()) {
+        String hoursValue = hours.isEmpty() ? "0" : hours; //this will handle an empty hours/minutes input from user
+        String minsValue = minutes.isEmpty() ? "0" : minutes;
+        if(hoursValue.equals("0") && minsValue.equals("0")) {
             validationResult.put(R.id.editTextNumberHours, REQ_TIME_ERROR);
             validationResult.put(R.id.editTextNumberMinutes, REQ_TIME_ERROR);
         }
-        else if(!validateTimeTaken(Double.parseDouble(hours), Double.parseDouble(minutes))) {
+        else if(!validateTimeTaken(Double.parseDouble(hoursValue), Double.parseDouble(minsValue))) {
             validationResult.put(R.id.editTextNumberMinutes, INVALID_TIME_TAKEN);
         }
         return validationResult;

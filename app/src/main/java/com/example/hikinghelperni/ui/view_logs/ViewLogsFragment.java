@@ -1,5 +1,6 @@
 package com.example.hikinghelperni.ui.view_logs;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hikinghelperni.FirebaseUIActivity;
 import com.example.hikinghelperni.GetLoggedHikesController;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.ViewLogsAdapter;
@@ -45,11 +47,12 @@ public class ViewLogsFragment extends Fragment {
 
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(false);
-        RecyclerView rvLoggedHikes = binding.viewLogsRecyclerView;
-        GetLoggedHikesController getLoggedHikesController = new GetLoggedHikesController();
-        CollectionReference getLogs = firestore.collection("Users").document(user.getUid()).collection("Logs");
-        //get data from db and when call is complete handle results in adapter
-        getLogs.get().addOnCompleteListener(task -> {
+        if(user != null) {
+            RecyclerView rvLoggedHikes = binding.viewLogsRecyclerView;
+            GetLoggedHikesController getLoggedHikesController = new GetLoggedHikesController();
+            CollectionReference getLogs = firestore.collection("Users").document(user.getUid()).collection("Logs");
+            //get data from db and when call is complete handle results in adapter
+            getLogs.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     List<DocumentSnapshot> retrievedDocuments = task.getResult().getDocuments();
                     if (!retrievedDocuments.isEmpty()) {
@@ -61,15 +64,25 @@ public class ViewLogsFragment extends Fragment {
                 } else {
                     Log.d(this.getClass().toString(), "get failed with ", task.getException());
                 }
-        });
-        rvLoggedHikes.setLayoutManager(new LinearLayoutManager(this.getContext()));
+            });
+            rvLoggedHikes.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        setUpAddButton();
+            setUpAddButton();
+        } else {
+            binding.addLogFab.setVisibility(View.GONE);
+            binding.viewLogsScrollView.setVisibility(View.GONE);
+            binding.loginPromptViewLogs.getRoot().setVisibility(View.VISIBLE);
+            binding.loginPromptViewLogs.messageSignIn.setText(R.string.sign_in_message_view_logs);
+            binding.loginPromptViewLogs.buttonSignIn.setOnClickListener((v) -> {
+                Intent intent = new Intent(this.getActivity(), FirebaseUIActivity.class);
+                startActivity(intent);
+            });
+        }
         return root;
     }
 
     private void setUpAddButton() {
-        binding.addLogFAB.setOnClickListener((v) -> {
+        binding.addLogFab.setOnClickListener((v) -> {
             LogHikesFragment nextFragment = new LogHikesFragment();
             FragmentManager fragmentManager = getParentFragmentManager();
             fragmentManager.beginTransaction()
