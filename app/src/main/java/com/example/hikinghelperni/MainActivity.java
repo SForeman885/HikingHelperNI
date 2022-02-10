@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+        refreshFragmentView();
     }
 
     @Override
@@ -100,9 +101,15 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     task.getResult();
                     this.invalidateOptionsMenu();
+                    refreshFragmentView();
                     Toast.makeText(MainActivity.this, "Sign Out Successful",
                             Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void refreshFragmentView() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+        getSupportFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
     }
 
     private void CustomiseProfileMenu(Boolean isAuth, Menu menu) {

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="20dp">
+    android:paddingTop="15dp">
 
     <ScrollView
-        android:id="@+id/viewLogsScrollView"
+        android:id="@+id/view_logs_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="5dp"
@@ -18,14 +18,18 @@
         tools:layout_editor_absoluteX="0dp">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/viewLogsRecyclerView"
+            android:id="@+id/view_logs_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/view_logs_item" />
     </ScrollView>
 
+    <include
+        layout="@layout/login_prompt_section"
+        android:id="@+id/login_prompt_view_logs" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addLogFAB"
+        android:id="@+id/add_log_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100sp"
