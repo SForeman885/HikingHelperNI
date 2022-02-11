@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.hikinghelperni.CustomLoggedHike;
+import com.example.hikinghelperni.CustomLoggedHikeDTO;
 import com.example.hikinghelperni.FirebaseDatabase;
 import com.example.hikinghelperni.LogHikesValidator;
 import com.example.hikinghelperni.R;
@@ -109,7 +109,7 @@ public class LogHikesFragment extends Fragment {
                     if (difficulty.equals("Trail Difficulty")) {
                         difficulty = "Medium";
                     }
-                    CustomLoggedHike log = new CustomLoggedHike(trailName, date, Double.parseDouble(length), timeTaken, difficulty);
+                    CustomLoggedHikeDTO log = new CustomLoggedHikeDTO(trailName, date, Double.parseDouble(length), timeTaken, difficulty);
                     //logMapper() is used to convert the object into a Map that Firebase will accept
                     db.addNewCustomLog(log.LogMapper(), user.getUid());
                     ViewLogsFragment nextFragment = new ViewLogsFragment();

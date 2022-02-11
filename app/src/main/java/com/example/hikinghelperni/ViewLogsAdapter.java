@@ -15,9 +15,9 @@ import java.util.List;
 
 public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHolder>{
 
-    private List<CustomLoggedHike> mLoggedHikes;
+    private List<CustomLoggedHikeDTO> mLoggedHikes;
 
-    public ViewLogsAdapter(List<CustomLoggedHike> loggedHikes) {
+    public ViewLogsAdapter(List<CustomLoggedHikeDTO> loggedHikes) {
         mLoggedHikes = loggedHikes;
     }
 
@@ -51,7 +51,7 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
     // This populates data into each item through holder
     @Override
     public void onBindViewHolder(ViewLogsAdapter.ViewHolder holder, int position) {
-        CustomLoggedHike log = mLoggedHikes.get(position);
+        CustomLoggedHikeDTO log = mLoggedHikes.get(position);
 
         // Set item views based on your views and data model
         TextView nameTextView = holder.nameTextView;

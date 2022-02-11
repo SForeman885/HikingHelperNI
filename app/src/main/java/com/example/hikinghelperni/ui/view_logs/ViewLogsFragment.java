@@ -62,7 +62,7 @@ public class ViewLogsFragment extends Fragment {
                         Log.d(this.getClass().toString(), "No Logs Found");
                     }
                 } else {
-                    Log.d(this.getClass().toString(), "get failed with ", task.getException());
+                    Log.d(this.getClass().toString(), "getting logs failed with ", task.getException());
                 }
             });
             rvLoggedHikes.setLayoutManager(new LinearLayoutManager(this.getContext()));
