@@ -27,6 +27,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
+        public View trailLayoutView;
         public TextView nameTextView, locationTextView, difficultyTextView, lengthTextView;
         public ImageView trailImageView;
 
@@ -36,6 +37,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
+            trailLayoutView = itemView.findViewById(R.id.trails_item_layout);
             trailImageView = itemView.findViewById(R.id.trail_image);
             nameTextView = itemView.findViewById(R.id.trail_name);
             locationTextView = itemView.findViewById(R.id.trail_location);
@@ -55,6 +57,8 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
     @Override
     public void onBindViewHolder(TrailsAdapter.ViewHolder holder, int position) {
         TrailListDTO trail = mTrails.get(position);
+        View trailLayoutView = holder.trailLayoutView;
+        trailLayoutView.setClipToOutline(true);
 
         // Set item views based on your views and data model
         TextView nameTextView = holder.nameTextView;
@@ -82,7 +86,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
         StorageReference imageRef = storageRef.child("trailImages").child(trail.getImageLink());
         //Glide with firebaseui allows us to directly access and download image files from firebase storage
         //And place them into our image view
-        Glide.with(holder.trailImageView.getContext())
+        GlideApp.with(holder.trailImageView.getContext())
                 .load(imageRef)
                 .into(trailImageView);
     }
