@@ -56,7 +56,7 @@ public class ViewLogsFragment extends Fragment {
                 if (task.isSuccessful()) {
                     List<DocumentSnapshot> retrievedDocuments = task.getResult().getDocuments();
                     if (!retrievedDocuments.isEmpty()) {
-                        ViewLogsAdapter adapter = new ViewLogsAdapter(getLoggedHikesController.getLoggedHikes(retrievedDocuments));
+                        ViewLogsAdapter adapter = new ViewLogsAdapter(getLoggedHikesController.getLoggedHikesFromDocuments(retrievedDocuments));
                         rvLoggedHikes.setAdapter(adapter);
                     } else {
                         Log.d(this.getClass().toString(), "No Logs Found");

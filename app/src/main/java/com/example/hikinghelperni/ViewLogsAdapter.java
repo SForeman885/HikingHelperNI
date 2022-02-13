@@ -61,15 +61,15 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
         Date date = new Date(log.getDate());
         dateTextView.setText(simple.format(date));
         TextView lengthTextView = holder.lengthTextView;
-        lengthTextView.setText(log.getLength() + "km");
+        lengthTextView.setText(String.format("%skm", log.getLength()));
         TextView timeTakenView = holder.timeTakenTextView;
         //figure out if and how many hours fit into the timeTaken minutes value and set text based on this
         int noOfFullHours = log.getTimeTaken()/60;
         if(noOfFullHours > 1) {
-            timeTakenView.setText(String.format("Time:%s hours %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
+            timeTakenView.setText(String.format("Time: %s hours %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
         }
         else if(noOfFullHours == 1) {
-            timeTakenView.setText(String.format("Time:%s hour %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
+            timeTakenView.setText(String.format("Time: %s hour %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
         }
         else {
             timeTakenView.setText(String.format("Time: %s minutes", log.getTimeTaken()));

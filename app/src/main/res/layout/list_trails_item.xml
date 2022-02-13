@@ -6,26 +6,32 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/trails_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/list_trails_item_shape"
         android:orientation="vertical"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/trail_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -35,7 +41,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingBottom="5dp"
-                android:textSize="18sp" />
+                android:textSize="20sp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/trail_location"
@@ -56,16 +63,22 @@
                     android:id="@+id/trail_difficulty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="start"
                     android:background="@drawable/difficulty_icon_easy"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:textSize="18sp" />
 
+                <View
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent" />
+
                 <TextView
                     android:id="@+id/trail_length"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_gravity="end"
                     android:textSize="18sp" />
             </LinearLayout>
         </LinearLayout>
