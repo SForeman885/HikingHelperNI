@@ -46,32 +46,20 @@ public class LogHikesValidator {
     }
 
     private boolean validateName(String name) {
-        if(name.length() > MAX_NAME_LENGTH){
-            return false;
-        }
-        return true;
+        return name.length() <= MAX_NAME_LENGTH;
     }
 
     private boolean validateDate(long date) {//using Time as Date and DateTime are older outdated libraries
         Time formattedDate = new Time(date);
         Time currentDate = new Time(System.currentTimeMillis());
-        if(formattedDate.after(currentDate)) {
-            return false;
-        }
-        return true;
+        return !formattedDate.after(currentDate);
     }
 
     private boolean validateTrailLength(double length) {
-        if(length < 1) {
-            return false;
-        }
-        return true;
+        return !(length < 1);
     }
 
     private boolean validateTimeTaken(double hours, double minutes) {
-        if(hours%1 != 0 || minutes%1 != 0 || minutes >= MAX_MINUTES) {
-            return false;
-        }
-        return true;
+        return hours % 1 == 0 && minutes % 1 == 0 && !(minutes >= MAX_MINUTES);
     }
 }
