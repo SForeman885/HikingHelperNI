@@ -60,6 +60,7 @@ public class ViewLogsFragment extends Fragment {
                         rvLoggedHikes.setAdapter(adapter);
                     } else {
                         Log.d(this.getClass().toString(), "No Logs Found");
+                        binding.noLoggedHikesMessage.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Log.d(this.getClass().toString(), "getting logs failed with ", task.getException());

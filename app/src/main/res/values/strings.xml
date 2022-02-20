@@ -7,14 +7,16 @@
     <string name="profile_option_sign_out">Sign Out</string>
     <string name="profile_option_sign_in">Sign In/Sign up</string>
     <string name="action_bar_option_back">Back</string>
+    <string name="sign_in_message_view_logs">Please Sign In to Add and View Your Logged Hikes</string>
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">599897484620268</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb599897484620268</string>
-    <string name="trailnamelabel">Trail Name</string>
+    <string name="trail_name_label">Trail Name</string>
     <string name="trail_length_label">Trail Length (km)</string>
     <string name="time_taken_label">Time Taken</string>
     <string name="hours_label">Hours</string>
     <string name="minutes_label">Minutes</string>
     <string name="date_label">Date</string>
     <string name="submit_log_button_text">Submit Log</string>
+    <string name="no_logged_hikes">You currently do not have any logged hikes</string>
 </resources>
