@@ -77,10 +77,10 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
         TextView difficultyView = holder.difficultyTextView;
         difficultyView.setText(log.getDifficulty());
         //Set colour and appearance of difficulty indicator
-        if (log.getDifficulty().equals("Easy")) {
+        if (log.getDifficulty().equalsIgnoreCase("easy")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_easy));
         }
-        else if (log.getDifficulty().equals("Medium")) {
+        else if (log.getDifficulty().equalsIgnoreCase("medium")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_medium));
         }
         else {

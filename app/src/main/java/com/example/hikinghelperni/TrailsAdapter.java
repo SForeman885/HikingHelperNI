@@ -70,10 +70,10 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
         TextView difficultyView = holder.difficultyTextView;
         difficultyView.setText(trail.getDifficulty());
         //Set colour and appearance of difficulty indicator
-        if (trail.getDifficulty().equals("Easy")) {
+        if (trail.getDifficulty().equalsIgnoreCase("easy")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_easy));
         }
-        else if (trail.getDifficulty().equals("Medium")) {
+        else if (trail.getDifficulty().equalsIgnoreCase("medium")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_medium));
         }
         else {
