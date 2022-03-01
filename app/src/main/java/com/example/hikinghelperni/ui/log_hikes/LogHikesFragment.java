@@ -3,6 +3,7 @@ package com.example.hikinghelperni.ui.log_hikes;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.hikinghelperni.CustomLoggedHike;
+import com.example.hikinghelperni.CustomLoggedHikeDTO;
 import com.example.hikinghelperni.FirebaseDatabase;
+import com.example.hikinghelperni.GetLoggedHikesController;
 import com.example.hikinghelperni.LogHikesValidator;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.databinding.FragmentLogHikesBinding;
@@ -26,7 +28,11 @@ import com.example.hikinghelperni.ui.view_logs.ViewLogsFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.List;
 import java.util.Map;
 
 public class LogHikesFragment extends Fragment {
@@ -109,15 +115,9 @@ public class LogHikesFragment extends Fragment {
                     if (difficulty.equals("Trail Difficulty")) {
                         difficulty = "Medium";
                     }
-                    CustomLoggedHike log = new CustomLoggedHike(trailName, date, Double.parseDouble(length), timeTaken, difficulty);
-                    //logMapper() is used to convert the object into a Map that Firebase will accept
-                    db.addNewCustomLog(log.LogMapper(), user.getUid());
-                    ViewLogsFragment nextFragment = new ViewLogsFragment();
-                    FragmentManager fragmentManager = getParentFragmentManager();
-                    fragmentManager.popBackStack();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.nav_host_fragment_activity_main, nextFragment)
-                            .commit();
+
+                    CustomLoggedHikeDTO log = new CustomLoggedHikeDTO(trailName, date, Double.parseDouble(length), timeTaken, difficulty);
+                    LogHikeAfterCheckingForExistingLogInDB(log, user, v);
                 }
             }
             else {
@@ -126,6 +126,37 @@ public class LogHikesFragment extends Fragment {
                 snackbar.show();
             }
 
+        });
+    }
+
+    public void LogHikeAfterCheckingForExistingLogInDB(CustomLoggedHikeDTO userLog, FirebaseUser user, View v) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        CollectionReference getLogs = firestore.collection("Users").document(user.getUid()).collection("Logs");
+        GetLoggedHikesController getLoggedHikesController = new GetLoggedHikesController();
+        getLogs.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<DocumentSnapshot> retrievedDocuments = task.getResult().getDocuments();
+                if (!retrievedDocuments.isEmpty()) {
+                    //Check if the user already has a log saved with the same name
+                    List<CustomLoggedHikeDTO> customLoggedHikeDTOList = getLoggedHikesController.getLoggedHikesFromDocuments(retrievedDocuments);
+                    if(!customLoggedHikeDTOList.stream().anyMatch(log -> log.getTrailName().equals(userLog.getTrailName()))) {
+                        //logMapper() is used to convert the object into a Map that Firebase will accept
+                        db.addNewCustomLog(userLog.LogMapper(), user.getUid());
+                        ViewLogsFragment nextFragment = new ViewLogsFragment();
+                        FragmentManager fragmentManager = getParentFragmentManager();
+                        fragmentManager.popBackStack();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.nav_host_fragment_activity_main, nextFragment)
+                                .commit();
+                    }
+                    else {
+                        EditText textView = v.getRootView().findViewById(R.id.editTextTrailName);
+                        textView.setError("Please choose a unique name for the trail");
+                    }
+                }
+            } else {
+                Log.d(this.getClass().toString(), "getting logs failed with ", task.getException());
+            }
         });
     }
 

@@ -15,9 +15,9 @@ import java.util.List;
 
 public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHolder>{
 
-    private List<CustomLoggedHike> mLoggedHikes;
+    private List<CustomLoggedHikeDTO> mLoggedHikes;
 
-    public ViewLogsAdapter(List<CustomLoggedHike> loggedHikes) {
+    public ViewLogsAdapter(List<CustomLoggedHikeDTO> loggedHikes) {
         mLoggedHikes = loggedHikes;
     }
 
@@ -51,7 +51,7 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
     // This populates data into each item through holder
     @Override
     public void onBindViewHolder(ViewLogsAdapter.ViewHolder holder, int position) {
-        CustomLoggedHike log = mLoggedHikes.get(position);
+        CustomLoggedHikeDTO log = mLoggedHikes.get(position);
 
         // Set item views based on your views and data model
         TextView nameTextView = holder.nameTextView;
@@ -61,15 +61,15 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
         Date date = new Date(log.getDate());
         dateTextView.setText(simple.format(date));
         TextView lengthTextView = holder.lengthTextView;
-        lengthTextView.setText(log.getLength() + "km");
+        lengthTextView.setText(String.format("%skm", log.getLength()));
         TextView timeTakenView = holder.timeTakenTextView;
         //figure out if and how many hours fit into the timeTaken minutes value and set text based on this
         int noOfFullHours = log.getTimeTaken()/60;
         if(noOfFullHours > 1) {
-            timeTakenView.setText(String.format("Time:%s hours %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
+            timeTakenView.setText(String.format("Time: %s hours %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
         }
         else if(noOfFullHours == 1) {
-            timeTakenView.setText(String.format("Time:%s hour %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
+            timeTakenView.setText(String.format("Time: %s hour %s minutes", noOfFullHours, (log.getTimeTaken() - (noOfFullHours * 60))));
         }
         else {
             timeTakenView.setText(String.format("Time: %s minutes", log.getTimeTaken()));
@@ -77,10 +77,10 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
         TextView difficultyView = holder.difficultyTextView;
         difficultyView.setText(log.getDifficulty());
         //Set colour and appearance of difficulty indicator
-        if (log.getDifficulty().equals("Easy")) {
+        if (log.getDifficulty().equalsIgnoreCase("easy")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_easy));
         }
-        else if (log.getDifficulty().equals("Medium")) {
+        else if (log.getDifficulty().equalsIgnoreCase("medium")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_medium));
         }
         else {

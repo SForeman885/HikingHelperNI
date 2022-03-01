@@ -1,6 +1,7 @@
 package com.example.hikinghelperni;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -73,15 +75,14 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, FirebaseUIActivity.class);
             startActivity(intent);
         }
-        if(item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             FragmentManager navFragmentManager = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
             int count = navFragmentManager.getBackStackEntryCount();
             String previousFragmentName = navFragmentManager.getBackStackEntryAt(count - 1).getName();
-            if(previousFragmentName.equals("ViewLogsFragment")) {
+            if (previousFragmentName.equals("ViewLogsFragment")) {
                 Fragment previousFragment = new ViewLogsFragment();
                 NavigateBackToPreviousFragment(navFragmentManager, previousFragment);
-            }
-            else if(previousFragmentName.equals("HikeViewFragment")) {
+            } else if (previousFragmentName.equals("HikeViewFragment")) {
                 //NavigateBackToPreviousFragment(navFragmentManager, previousFragment);
             }
         }
@@ -108,8 +109,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshFragmentView() {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
-        getSupportFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
+        Fragment parentFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+        Fragment fragment = parentFragment.getChildFragmentManager().getFragments().get(0);
+        FragmentTransaction transaction = parentFragment.getChildFragmentManager().beginTransaction();
+        if (Build.VERSION.SDK_INT >= 26) {
+            transaction.setReorderingAllowed(false);
+        }
+        transaction.detach(fragment).commit();
+        transaction = parentFragment.getChildFragmentManager().beginTransaction();
+        transaction.attach(fragment).commit();
     }
 
     private void CustomiseProfileMenu(Boolean isAuth, Menu menu) {

@@ -56,13 +56,14 @@ public class ViewLogsFragment extends Fragment {
                 if (task.isSuccessful()) {
                     List<DocumentSnapshot> retrievedDocuments = task.getResult().getDocuments();
                     if (!retrievedDocuments.isEmpty()) {
-                        ViewLogsAdapter adapter = new ViewLogsAdapter(getLoggedHikesController.getLoggedHikes(retrievedDocuments));
+                        ViewLogsAdapter adapter = new ViewLogsAdapter(getLoggedHikesController.getLoggedHikesFromDocuments(retrievedDocuments));
                         rvLoggedHikes.setAdapter(adapter);
                     } else {
                         Log.d(this.getClass().toString(), "No Logs Found");
+                        binding.noLoggedHikesMessage.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    Log.d(this.getClass().toString(), "get failed with ", task.getException());
+                    Log.d(this.getClass().toString(), "getting logs failed with ", task.getException());
                 }
             });
             rvLoggedHikes.setLayoutManager(new LinearLayoutManager(this.getContext()));

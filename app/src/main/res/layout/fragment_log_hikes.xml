@@ -25,7 +25,7 @@
                 android:id="@+id/textTrailName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/trailnamelabel"
+                android:text="@string/trail_name_label"
                 android:textSize="18sp" />
 
             <EditText
