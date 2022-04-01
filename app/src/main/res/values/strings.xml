@@ -19,4 +19,6 @@
     <string name="date_label">Date</string>
     <string name="submit_log_button_text">Submit Log</string>
     <string name="no_logged_hikes">You currently do not have any logged hikes</string>
+    <string name="trail_elevation_label">Elevation (m)</string>
+    <string name="trail_route_type_label">Route Type</string>
 </resources>
