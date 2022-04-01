@@ -7,32 +7,41 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
+import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
+import java.util.Locale;
 
 public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder>{
 
     private List<TrailListDTO> mTrails;
+    private TrailsViewModel trailsViewModel;
 
-    public TrailsAdapter(List<TrailListDTO> trails) {
+    FragmentManager fragmentManager;
+
+    public  TrailsAdapter(Context context, FragmentManager _fragmentManager, List<TrailListDTO> trails) {
         mTrails = trails;
+        trailsViewModel = new ViewModelProvider((FragmentActivity) context).get(TrailsViewModel.class);
+        fragmentManager = _fragmentManager;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // Your holder should contain a member variable
-        // for any view that will be set as you render a row
+        // a member variable for each view that will be set as you render a row
         public View trailLayoutView;
         public TextView nameTextView, locationTextView, difficultyTextView, lengthTextView;
         public ImageView trailImageView;
 
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each subview
+        // constructor that accepts the entire item row and finds each subview
         public ViewHolder(View itemView) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
@@ -43,6 +52,14 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
             locationTextView = itemView.findViewById(R.id.trail_location);
             lengthTextView = itemView.findViewById(R.id.trail_length);
             difficultyTextView = itemView.findViewById(R.id.trail_difficulty);
+            itemView.setOnClickListener(v -> {
+                trailsViewModel.setMTrailId(mTrails.get(getAdapterPosition()).getId());
+                TrailDetailsFragment nextFragment = new TrailDetailsFragment();
+                fragmentManager.beginTransaction()
+                               .replace(R.id.nav_host_fragment_activity_main, nextFragment)
+                               .addToBackStack("TrailsFragment")
+                               .commit();
+            });
         }
     }
 
@@ -68,7 +85,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
         TextView lengthTextView = holder.lengthTextView;
         lengthTextView.setText(String.format("%skm", trail.getLength()));
         TextView difficultyView = holder.difficultyTextView;
-        difficultyView.setText(trail.getDifficulty());
+        difficultyView.setText(trail.getDifficulty().toLowerCase(Locale.ROOT));
         //Set colour and appearance of difficulty indicator
         if (trail.getDifficulty().equalsIgnoreCase("easy")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_easy));
