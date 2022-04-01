@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.hikinghelperni.ui.trails.TrailsFragment;
 import com.example.hikinghelperni.ui.view_logs.ViewLogsFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -79,21 +80,11 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager navFragmentManager = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
             int count = navFragmentManager.getBackStackEntryCount();
             String previousFragmentName = navFragmentManager.getBackStackEntryAt(count - 1).getName();
-            if (previousFragmentName.equals("ViewLogsFragment")) {
-                Fragment previousFragment = new ViewLogsFragment();
-                NavigateBackToPreviousFragment(navFragmentManager, previousFragment);
-            } else if (previousFragmentName.equals("HikeViewFragment")) {
-                //NavigateBackToPreviousFragment(navFragmentManager, previousFragment);
+            if (previousFragmentName.equals("ViewLogsFragment") || previousFragmentName.equals("TrailsFragment")) {
+                navFragmentManager.popBackStack();
             }
         }
         return false;
-    }
-
-    private void NavigateBackToPreviousFragment(FragmentManager navFragmentManager, Fragment previousFragment) {
-        navFragmentManager.popBackStack();
-        navFragmentManager.beginTransaction()
-                .replace(R.id.nav_host_fragment_activity_main, previousFragment)
-                .commit();
     }
 
     public void signOut() {
