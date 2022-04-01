@@ -121,6 +121,93 @@ public class TrailDetailsFragment extends Fragment {
         GlideApp.with(getContext())
                 .load(mapRef)
                 .into(binding.trailDetailsRouteMapImage);
+        getForecastDataAndHikeRecommendation(trailDetails.getLatitude(), trailDetails.getLongitude());
+    }
+
+    private void getForecastDataAndHikeRecommendation(Double latitude, Double longitude) {
+        RecyclerView rvForecast = binding.trailDetailsForecastRecyclerView;
+        rvForecast.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false));
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("lat", latitude.toString());
+        parameters.put("lon", longitude.toString());
+        parameters.put("units", "metric");
+        parameters.put("exclude", "current,minutely,hourly,alerts");
+        parameters.put("appid", "4887d49bf0dd5494e5bc48915c8bc36d");
+        ForecastService service = retrofit.create(ForecastService.class);
+
+        // Calling weather api for our trail location
+        Call<ForecastApiResponse> call = service.getForecast(parameters);
+
+        call.enqueue(new Callback<ForecastApiResponse>() {
+            @Override
+            public void onResponse(Call<ForecastApiResponse> call,
+                                   Response<ForecastApiResponse> response) {
+                ForecastApiResponse apiResponse = response.body();
+                TrailDetailsForecastAdapter adapter = new TrailDetailsForecastAdapter(apiResponse.getDaily());
+                rvForecast.setAdapter(adapter);
+                displayHikeTimeRecommendation(firestore, trailsViewModel.getMSelectedTrailDetails(), apiResponse);
+            }
+
+            @Override
+            public void onFailure(Call<ForecastApiResponse> call, Throwable t) {
+                System.out.println("Failed to get forecast for trail");
+            }
+        });
+    }
+
+    private void displayHikeTimeRecommendation(FirebaseFirestore firestore, TrailDetailsDTO trailDetails, ForecastApiResponse forecastResponse) {
+        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+        TrailTimeEstimationService trailTimeEstimationService = new TrailTimeEstimationService();
+        DocumentReference getUserDetails = firestore.collection("Users").document(user.getUid());
+        getUserDetails.get().addOnCompleteListener(task -> {
+            Map<String, Object> userData = task.getResult().getData();
+            if(userData.containsKey("averageSpeed")) {
+                ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion = trailTimeEstimationService.getDateSuggestionForTrail(trailDetails, (Double) task.getResult().get("averageSpeed"), forecastResponse);
+                setRecommendationDetails(trailForecastAndTimeSuggestion);
+                setDisplayCustomized();
+            }
+            else {
+                ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion = trailTimeEstimationService.getUncustomizedDateSuggestionForTrail(trailDetails, forecastResponse);
+                setRecommendationDetails(trailForecastAndTimeSuggestion);
+                setDisplayUncustomized();
+            }
+        });
+    }
+
+    private void setRecommendationDetails(ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion) {
+        LocalDateTime dateRecommendation = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getDateTime(), 0, ZoneOffset.UTC);
+        binding.trailDetailsRecommendedDate.setText(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(dateRecommendation));
+        LocalDateTime earliestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getEarliestHikeTime(), 0, ZoneOffset.UTC);
+        LocalDateTime latestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getLatestHikeTime(), 0, ZoneOffset.UTC);
+        String earliestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(earliestTime);
+        String latestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(latestTime);
+        binding.trailDetailsRecommendedTimesStart.setText(String.format("Earliest start of hike: %s", earliestTimeString));
+        binding.trailDetailsRecommendedTimesEnd.setText(String.format("Latest start of hike: %s", latestTimeString));
+        int timeEstimateHours = (int) (trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getUserTimeEstimate() / 60);
+        int timeEstimateMinutes = (int) (trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getUserTimeEstimate() % 60);
+        binding.trailDetailsRecommendedTimeEstimate.setText(String.format("Time to complete: %s hours %s mins", timeEstimateHours, timeEstimateMinutes));
+        String iconURI = String.format("%s:drawable/weather_icon_%s", getContext().getPackageName(), trailForecastAndTimeSuggestion.getSuggestionForecast().getWeather().get(0).getIcon());
+        int imageResource = getContext().getResources().getIdentifier(iconURI, null, null);
+        binding.recommendationForecastIconImage.setImageDrawable(getContext().getDrawable(imageResource));
+    }
+
+    private void setDisplayUncustomized() {
+        FloatingActionButton recommendationInfoIcon = binding.recommendationInfoUncustomizedIcon;
+        recommendationInfoIcon.setVisibility(View.VISIBLE);
+        TooltipCompat.setTooltipText(recommendationInfoIcon, getResources().getString(R.string.trail_details_recommended_not_customized_tooltip));
+    }
+
+    private void setDisplayCustomized() {
+        FloatingActionButton recommendationInfoIcon = binding.recommendationInfoCustomizedIcon;
+        recommendationInfoIcon.setVisibility(View.VISIBLE);
+        TooltipCompat.setTooltipText(recommendationInfoIcon, getResources().getString(R.string.trail_details_recommended_customized_tooltip));
     }
 
     @Override
