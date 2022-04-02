@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hikinghelperni.BuildConfig;
 import com.example.hikinghelperni.ForecastApiResponse;
 import com.example.hikinghelperni.ForecastService;
 import com.example.hikinghelperni.ForecastWithHikeTimeSuggestionDTO;
@@ -26,21 +26,18 @@ import com.example.hikinghelperni.GlideApp;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.TrailDetailsDTO;
 import com.example.hikinghelperni.TrailDetailsForecastAdapter;
-import com.example.hikinghelperni.TrailHikeTimeSuggestionDTO;
 import com.example.hikinghelperni.TrailTimeEstimationService;
 import com.example.hikinghelperni.databinding.FragmentTrailDetailsBinding;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.sql.Time;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -139,7 +136,7 @@ public class TrailDetailsFragment extends Fragment {
         parameters.put("lon", longitude.toString());
         parameters.put("units", "metric");
         parameters.put("exclude", "current,minutely,hourly,alerts");
-        parameters.put("appid", "4887d49bf0dd5494e5bc48915c8bc36d");
+        parameters.put("appid", BuildConfig.FORECAST_API_KEY);
         ForecastService service = retrofit.create(ForecastService.class);
 
         // Calling weather api for our trail location
