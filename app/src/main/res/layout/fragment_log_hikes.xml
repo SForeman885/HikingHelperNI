@@ -5,57 +5,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.log_hikes.LogHikesFragment">
+
     <ScrollView
-        android:id="@+id/logHikeScrollView"
+        android:id="@+id/log_hike_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_gravity="top"
-            android:paddingBottom="50dp"
-            android:focusable="true" >
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingBottom="50dp">
 
             <TextView
-                android:id="@+id/textTrailName"
+                android:id="@+id/text_hike_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/trail_name_label"
+                android:text="@string/hike_name_label"
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextTrailName"
+                android:id="@+id/edit_text_hike_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:textSize="18sp"
                 android:minHeight="48dp"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textDate"
+                android:id="@+id/text_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/date_label"
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextDateField"
+                android:id="@+id/edit_text_date_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:textSize="18sp"
                 android:ems="10"
                 android:minHeight="48dp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toTopOf="@+id/text_log_hikes"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -63,12 +65,12 @@
                 tools:ignore="TextFields" />
 
             <CalendarView
-            android:id="@+id/dateCalendar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+                android:id="@+id/date_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/textTimeTaken"
+                android:id="@+id/text_time_taken"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -81,7 +83,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textHours"
+                    android:id="@+id/text_hours"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -89,7 +91,7 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/textMinutes"
+                    android:id="@+id/text_minutes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -105,57 +107,66 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/editTextNumberHours"
+                    android:id="@+id/edit_text_number_hours"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="18sp"
                     android:ems="10"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/editTextNumberMinutes"
+                    android:id="@+id/edit_text_number_minutes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="18sp"
                     android:ems="10"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textTrailLength"
+            <LinearLayout
+                android:id="@+id/custom_log_details_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/trail_length_label"
-                android:textSize="18sp" />
+                android:layout_gravity="top"
+                android:focusable="true"
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/editTextNumberTrailLength"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:textSize="18sp"
-                android:ems="10"
-                android:inputType="numberDecimal" />
+                <TextView
+                    android:id="@+id/text_trail_length"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/trail_length_label"
+                    android:textSize="18sp" />
 
-            <Spinner
-                android:id="@+id/spinnerTrailType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:textSize="18sp" />
+                <EditText
+                    android:id="@+id/edit_text_number_trail_length"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:ems="10"
+                    android:inputType="numberDecimal"
+                    android:textSize="18sp" />
 
-            <Spinner
-                android:id="@+id/spinnerDifficulty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:textSize="18sp" />
+                <Spinner
+                    android:id="@+id/spinner_trail_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:textSize="18sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_difficulty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:textSize="18sp" />
+            </LinearLayout>
 
             <Button
-                android:id="@+id/buttonSubmitLog"
+                android:id="@+id/button_submit_log"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
