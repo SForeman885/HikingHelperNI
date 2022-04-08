@@ -13,4 +13,5 @@
     <color name="easy_green">#2dc937</color>
     <color name="medium_yellow">#e7b416</color>
     <color name="challenging_red">#cc3232</color>
+    <color name="semi_transparent_black">#33000000</color>
 </resources>

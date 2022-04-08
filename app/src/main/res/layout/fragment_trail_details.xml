@@ -23,7 +23,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/trails_details_image_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,7 +40,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:scaleType="centerCrop" />
-            </LinearLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/trail_options_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="1dp"
+                    android:layout_gravity="end"
+                    android:layout_alignParentEnd="true"
+                    app:backgroundTint="@color/semi_transparent_black"
+                    app:tint="@android:color/white"
+                    app:fabCustomSize="30dp"
+                    app:srcCompat="@drawable/ic_vert_three_dots_white_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/trails_details_title_layout"

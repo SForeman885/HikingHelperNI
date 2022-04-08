@@ -55,7 +55,7 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
 
         // Set item views based on your views and data model
         TextView nameTextView = holder.nameTextView;
-        nameTextView.setText(log.getTrailName());
+        nameTextView.setText(log.getHikeName());
         TextView dateTextView = holder.dateTextView;
         DateFormat simple = DateFormat.getDateInstance();
         Date date = new Date(log.getDate());

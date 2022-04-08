@@ -4,6 +4,35 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/trail_list_save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="1dp"
+        android:layout_gravity="end"
+        android:layout_alignParentEnd="true"
+        app:backgroundTint="@color/semi_transparent_black"
+        app:tint="@android:color/white"
+        app:fabCustomSize="30dp"
+        app:srcCompat="@drawable/ic_bookmark_empty_white_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/trail_list_unsave_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="1dp"
+        android:visibility="gone"
+        android:layout_gravity="end"
+        android:layout_alignParentEnd="true"
+        app:backgroundTint="@color/semi_transparent_black"
+        app:tint="@android:color/white"
+        app:fabCustomSize="30dp"
+        app:srcCompat="@drawable/ic_bookmark_filled_white_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:id="@+id/trails_item_layout"
         android:layout_width="match_parent"

@@ -19,28 +19,50 @@ public class LogHikesValidator {
 
     public Map<Integer, String> validateCustomLog(String name, long date, String length, String hours, String minutes) {
         if(name.isEmpty()) {
-            validationResult.put(R.id.editTextTrailName, REQ_FIELD_ERROR);
+            validationResult.put(R.id.edit_text_hike_name, REQ_FIELD_ERROR);
         }
         else if(!validateName(name)) {
-            validationResult.put(R.id.editTextTrailName, INVALID_NAME);
+            validationResult.put(R.id.edit_text_hike_name, INVALID_NAME);
         }
         if(!validateDate(date)) {
-            validationResult.put(R.id.editTextDateField, INVALID_DATE);
+            validationResult.put(R.id.edit_text_date_field, INVALID_DATE);
         }
         if(length.isEmpty()) {
-            validationResult.put(R.id.editTextNumberTrailLength, REQ_FIELD_ERROR);
+            validationResult.put(R.id.edit_text_number_trail_length, REQ_FIELD_ERROR);
         }
         else if(!validateTrailLength(Double.parseDouble(length))) {
-            validationResult.put(R.id.editTextNumberTrailLength, INVALID_LENGTH);
+            validationResult.put(R.id.edit_text_number_trail_length, INVALID_LENGTH);
         }
         String hoursValue = hours.isEmpty() ? "0" : hours; //this will handle an empty hours/minutes input from user
         String minsValue = minutes.isEmpty() ? "0" : minutes;
         if(hoursValue.equals("0") && minsValue.equals("0")) {
-            validationResult.put(R.id.editTextNumberHours, REQ_TIME_ERROR);
-            validationResult.put(R.id.editTextNumberMinutes, REQ_TIME_ERROR);
+            validationResult.put(R.id.edit_text_number_hours, REQ_TIME_ERROR);
+            validationResult.put(R.id.edit_text_number_minutes, REQ_TIME_ERROR);
         }
         else if(!validateTimeTaken(Double.parseDouble(hoursValue), Double.parseDouble(minsValue))) {
-            validationResult.put(R.id.editTextNumberMinutes, INVALID_TIME_TAKEN);
+            validationResult.put(R.id.edit_text_number_minutes, INVALID_TIME_TAKEN);
+        }
+        return validationResult;
+    }
+
+    public Map<Integer, String> validateTrailLog(String name, long date, String hours, String minutes) {
+        if(name.isEmpty()) {
+            validationResult.put(R.id.edit_text_hike_name, REQ_FIELD_ERROR);
+        }
+        else if(!validateName(name)) {
+            validationResult.put(R.id.edit_text_hike_name, INVALID_NAME);
+        }
+        if(!validateDate(date)) {
+            validationResult.put(R.id.edit_text_date_field, INVALID_DATE);
+        }
+        String hoursValue = hours.isEmpty() ? "0" : hours; //this will handle an empty hours/minutes input from user
+        String minsValue = minutes.isEmpty() ? "0" : minutes;
+        if(hoursValue.equals("0") && minsValue.equals("0")) {
+            validationResult.put(R.id.edit_text_number_hours, REQ_TIME_ERROR);
+            validationResult.put(R.id.edit_text_number_minutes, REQ_TIME_ERROR);
+        }
+        else if(!validateTimeTaken(Double.parseDouble(hoursValue), Double.parseDouble(minsValue))) {
+            validationResult.put(R.id.edit_text_number_minutes, INVALID_TIME_TAKEN);
         }
         return validationResult;
     }
