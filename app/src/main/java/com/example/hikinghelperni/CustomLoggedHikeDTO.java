@@ -13,6 +13,7 @@ public class CustomLoggedHikeDTO {
     String trailName;
     Long date;
     double length;
+    double elevation;
     int timeTaken;
     String difficulty;
 

@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -37,7 +39,9 @@ public class TrailsFragment extends Fragment {
 
         binding = FragmentTrailsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         setHasOptionsMenu(true);
+        ab.setDisplayHomeAsUpEnabled(false);
 
         firestore = FirebaseFirestore.getInstance();
 
@@ -49,7 +53,7 @@ public class TrailsFragment extends Fragment {
             if (task.isSuccessful()) {
                 List<DocumentSnapshot> retrievedDocuments = task.getResult().getDocuments();
                 if (!retrievedDocuments.isEmpty()) {
-                    TrailsAdapter adapter = new TrailsAdapter(getTrailsController.getTrailsListItemsFromDocuments(retrievedDocuments));
+                    TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), getTrailsController.getTrailsListItemsFromDocuments(retrievedDocuments));
                     rvTrailsList.setAdapter(adapter);
                 } else {
                     Log.d(this.getClass().toString(), "No Trails Found");

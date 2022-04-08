@@ -1,19 +1,21 @@
 package com.example.hikinghelperni.ui.trails;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.hikinghelperni.TrailDetailsDTO;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class TrailsViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private String mTrailId;
+    private TrailDetailsDTO mSelectedTrailDetails;
 
     public TrailsViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is trails fragment");
+        mTrailId = "";
     }
 
-    public LiveData<String> getText() {
-        return mText;
-    }
 }

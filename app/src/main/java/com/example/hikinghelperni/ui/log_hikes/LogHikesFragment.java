@@ -51,6 +51,7 @@ public class LogHikesFragment extends Fragment {
         mFirebaseAuth = FirebaseAuth.getInstance();
         SetUpDateControl();
         SetUpDifficultyDropDown();
+        SetUpTrailTypeDropDown();
         SetUpSubmitButton();
         setHasOptionsMenu(true);
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
@@ -84,9 +85,16 @@ public class LogHikesFragment extends Fragment {
 
     private void SetUpDifficultyDropDown() {
         //filling in trail difficulty control with array adapter to allow dropdown
-        String[] items = new String[]{"Trail Difficulty", "Easy", "Medium", "Challenging"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(), R.layout.custom_dropdown, items);
+        String[] difficultyItems = new String[]{"Trail Difficulty", "Easy", "Medium", "Challenging"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(), R.layout.custom_dropdown, difficultyItems);
         binding.spinnerDifficulty.setAdapter(adapter);
+    }
+
+    private void SetUpTrailTypeDropDown() {
+        //filling in trail type control with array adapter to allow dropdown
+        String[] trailTypeItems = new String[]{"Type Of Trail", "Mountain", "Hill", "Park/Beach"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(), R.layout.custom_dropdown, trailTypeItems);
+        binding.spinnerTrailType.setAdapter(adapter);
     }
 
     private void SetUpSubmitButton() {
@@ -101,6 +109,7 @@ public class LogHikesFragment extends Fragment {
                 String hours = binding.editTextNumberHours.getText().toString();
                 String minutes = binding.editTextNumberMinutes.getText().toString();
                 String difficulty = binding.spinnerDifficulty.getSelectedItem().toString();
+                String trailType = binding.spinnerTrailType.getSelectedItem().toString();
                 Map<Integer, String> validatorResponse = validator.validateCustomLog(trailName, date, length, hours, minutes);
                 if (!validatorResponse.isEmpty()) {
                     for (Integer key : validatorResponse.keySet()) {
@@ -115,8 +124,9 @@ public class LogHikesFragment extends Fragment {
                     if (difficulty.equals("Trail Difficulty")) {
                         difficulty = "Medium";
                     }
+                    double elevation = getAveragedTrailElevation(trailType);
 
-                    CustomLoggedHikeDTO log = new CustomLoggedHikeDTO(trailName, date, Double.parseDouble(length), timeTaken, difficulty);
+                    CustomLoggedHikeDTO log = new CustomLoggedHikeDTO(trailName, date, Double.parseDouble(length), elevation, timeTaken, difficulty);
                     LogHikeAfterCheckingForExistingLogInDB(log, user, v);
                 }
             }
@@ -158,6 +168,20 @@ public class LogHikesFragment extends Fragment {
                 Log.d(this.getClass().toString(), "getting logs failed with ", task.getException());
             }
         });
+    }
+
+    //when a user enters the type of trail we use this to save the average elevation of trails
+    //of this type to use in calculations
+    private double getAveragedTrailElevation(String trailType) {
+        if(trailType.equals("Mountain")) {
+            return 700;
+        }
+        else if(trailType.equals("Hill")) {
+            return 150;
+        }
+        else {
+            return 0;
+        }
     }
 
     @Override
