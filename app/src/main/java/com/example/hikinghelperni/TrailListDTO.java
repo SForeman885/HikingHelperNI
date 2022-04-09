@@ -10,9 +10,9 @@ import lombok.Value;
 @Value
 public class TrailListDTO {
     String id;
-    String trailName;
+    String name;
     String imageLink;
-    String location;
+    String locationName;
     double latitude;
     double longitude;
     double length;
@@ -29,6 +29,6 @@ public class TrailListDTO {
                         return "";
                     }
                 }
-                                                                                          ));
+                ));
     }
 }
