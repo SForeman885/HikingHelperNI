@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -16,7 +17,7 @@ public class FirebaseDatabase {
 
     public void addNewUser(String userId) {
         Map<String, Object> defaultUserDetails = new HashMap<>();
-        defaultUserDetails.put("hometown", "");
+        defaultUserDetails.put("hometown", "hometown");
         db.collection("Users").document(userId).set(defaultUserDetails)
                 .addOnSuccessListener(aVoid -> Log.d(this.getClass().toString(), "Sign Up Successful!"))
                 .addOnFailureListener(e -> Log.w(this.getClass().toString(), "Error Signing Up", e));
@@ -55,6 +56,58 @@ public class FirebaseDatabase {
           .addOnFailureListener(e -> {
               Log.w(this.getClass().toString(), "Error Deleting trail, please try again", e);
               Toast.makeText(context, "Error unsaving trail, please try again", Toast.LENGTH_SHORT).show();
+          });
+    }
+
+    public void deleteSavedTrailFromList(String savedTrailId, String userId, Context context, TrailsAdapter adapter, int position) {
+        db.collection("Users").document(userId).collection("Saved Trails").document(savedTrailId).delete()
+          .addOnSuccessListener(aVoid -> {
+              Log.d(this.getClass().toString(), "Deleted Trail Successfully!");
+              adapter.mTrails.remove(position);
+              adapter.notifyItemRemoved(position);
+              Toast.makeText(context, "Trail Unsaved Successfully", Toast.LENGTH_SHORT).show();
+          })
+          .addOnFailureListener(e -> {
+              Log.w(this.getClass().toString(), "Error Deleting trail, please try again", e);
+              Toast.makeText(context, "Error unsaving trail, please try again", Toast.LENGTH_SHORT).show();
+          });
+    }
+
+    public void addNewSavedTime(Map<String, Object> savedTrail, String userId, Context context) {
+        db.collection("Users").document(userId).collection("Saved Times").document().set(savedTrail)
+          .addOnSuccessListener(aVoid -> {
+              Log.d(this.getClass().toString(), "Saved Time Successfully!");
+              Toast.makeText(context, "Recommendation Saved Successfully", Toast.LENGTH_SHORT).show();
+          })
+          .addOnFailureListener(e -> {
+              Log.w(this.getClass().toString(), "Error Saving time, please try again", e);
+              Toast.makeText(context, "Error Saving Recommendation, please try again", Toast.LENGTH_SHORT).show();
+          });
+    }
+
+    public void deleteSavedTime(String savedTrailId, String userId, Context context) {
+        db.collection("Users").document(userId).collection("Saved Times").document(savedTrailId).delete()
+          .addOnSuccessListener(aVoid -> {
+              Log.d(this.getClass().toString(), "Deleted Time Successfully!");
+              Toast.makeText(context, "Recommendation Unsaved Successfully", Toast.LENGTH_SHORT).show();
+          })
+          .addOnFailureListener(e -> {
+              Log.w(this.getClass().toString(), "Error Deleting Time, please try again", e);
+              Toast.makeText(context, "Error unsaving recommendation, please try again", Toast.LENGTH_SHORT).show();
+          });
+    }
+
+    public void deleteSavedTimeFromList(String savedTimeId, String userId, Context context, TimeRecommendationsAdapter adapter, int position) {
+        db.collection("Users").document(userId).collection("Saved Times").document(savedTimeId).delete()
+          .addOnSuccessListener(aVoid -> {
+              Log.d(this.getClass().toString(), "Deleted Time Successfully!");
+              adapter.mRecommendedTimes.remove(position);
+              adapter.notifyItemRemoved(position);
+              Toast.makeText(context, "Recommendation Unsaved Successfully", Toast.LENGTH_SHORT).show();
+          })
+          .addOnFailureListener(e -> {
+              Log.w(this.getClass().toString(), "Error Deleting time, please try again", e);
+              Toast.makeText(context, "Error unsaving recommendation, please try again", Toast.LENGTH_SHORT).show();
           });
     }
 
