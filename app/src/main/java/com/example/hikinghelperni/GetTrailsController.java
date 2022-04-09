@@ -10,9 +10,18 @@ import java.util.stream.Collectors;
 
 public class GetTrailsController {
 
+    public List<TrailListDTO> getSavedTrailsListItemsFromDocuments(List<DocumentSnapshot> retrievedDocuments) {
+        return mapTrailsListItemsFromDocuments(retrievedDocuments, true);
+    }
+
     public List<TrailListDTO> getTrailsListItemsFromDocuments(List<DocumentSnapshot> retrievedDocuments) {
+        return mapTrailsListItemsFromDocuments(retrievedDocuments, false);
+    }
+
+    public List<TrailListDTO> mapTrailsListItemsFromDocuments(List<DocumentSnapshot> retrievedDocuments, Boolean isSavedTrailList) {
         return retrievedDocuments.stream()
-                                 .map(doc -> new TrailListDTO(doc.getId(),
+                                 .map(doc -> new TrailListDTO(
+                                         isSavedTrailList ? doc.get("id").toString() : doc.getId(),
                                          doc.get("name").toString(),
                                          doc.get("imageLink").toString(),
                                          doc.get("locationName").toString(),
