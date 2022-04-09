@@ -9,6 +9,8 @@
     <string name="action_bar_option_back">Back</string>
     <string name="sign_in_message_view_logs">Please Sign In to Add and View Your Logged Hikes</string>
     <string name="sign_in_message_profile">Please Sign In to View your Profile</string>
+    <string name="sign_in_message_saved_trails">Please Login to view a list of saved trails</string>
+    <string name="sign_in_message_saved_times">Please Login to view a list of saved hike time recommendations</string>
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">599897484620268</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb599897484620268</string>
@@ -34,4 +36,8 @@
     <string name="total_distance_placeholder">totaldistanceplaceholder</string>
     <string name="log_hike_option">Log Hike for trail</string>
     <string name="save_trail_option">Save for later</string>
+    <string name="title_saved_trails">Saved Trails</string>
+    <string name="title_saved_times">Saved Times</string>
+    <string name="no_saved_trails_message">You currently do not have any saved trails</string>
+    <string name="no_saved_times_label">You currently do not have any saved time recommendations</string>
 </resources>
