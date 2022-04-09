@@ -29,17 +29,19 @@ import java.util.Locale;
 
 public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder> {
 
-    private List<TrailListDTO> mTrails;
+    public List<TrailListDTO> mTrails;
     private TrailsViewModel trailsViewModel;
+    private String currentFragment;
 
-    FragmentManager fragmentManager;
+    private FragmentManager fragmentManager;
 
     public TrailsAdapter(Context context, FragmentManager _fragmentManager,
-                         List<TrailListDTO> trails) {
+                         List<TrailListDTO> trails, String _currentFragment) {
         mTrails = trails;
         trailsViewModel =
                 new ViewModelProvider((FragmentActivity) context).get(TrailsViewModel.class);
         fragmentManager = _fragmentManager;
+        currentFragment = _currentFragment;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -47,7 +49,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
         public View trailLayoutView;
         public TextView nameTextView, locationTextView, difficultyTextView, lengthTextView;
         public ImageView trailImageView;
-        public FloatingActionButton saveTrailFab, unsaveTrailFab;
+        public FloatingActionButton saveTrailFab, unsaveTrailFab, deleteSavedTrailFab;
 
         // constructor that accepts the entire item row and finds each subview
         public ViewHolder(View itemView) {
@@ -62,6 +64,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
             difficultyTextView = itemView.findViewById(R.id.trail_difficulty);
             saveTrailFab = itemView.findViewById(R.id.trail_list_save_button);
             unsaveTrailFab = itemView.findViewById(R.id.trail_list_unsave_button);
+            deleteSavedTrailFab = itemView.findViewById(R.id.trail_list_delete_button);
             itemView.setOnClickListener(v -> {
                 trailsViewModel.setMTrailId(mTrails.get(getAdapterPosition()).getId());
                 TrailDetailsFragment nextFragment = new TrailDetailsFragment();
@@ -89,9 +92,9 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
 
         // Set item views based on your views and data model
         TextView nameTextView = holder.nameTextView;
-        nameTextView.setText(trail.getTrailName());
+        nameTextView.setText(trail.getName());
         TextView locationTextView = holder.locationTextView;
-        locationTextView.setText(trail.getLocation());
+        locationTextView.setText(trail.getLocationName());
         TextView lengthTextView = holder.lengthTextView;
         lengthTextView.setText(String.format("%skm", trail.getLength()));
         TextView difficultyView = holder.difficultyTextView;
@@ -119,7 +122,12 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
                 .load(imageRef)
                 .into(trailImageView);
 
-        SetUpSaveButton(holder, trail);
+        if(currentFragment.equals("Saved Trails")) {
+            SetUpDeleteButton(holder, trail, position);
+        }
+        else {
+            SetUpSaveButton(holder, trail);
+        }
     }
 
     private void SetUpSaveButton(ViewHolder holder, TrailListDTO trail) {
@@ -146,6 +154,25 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
                     });
                 }
                 SetUpSaveButton(holder, trail);
+            }
+        });
+    }
+
+    public void SetUpDeleteButton(ViewHolder holder, TrailListDTO trail, int position) {
+        holder.saveTrailFab.setVisibility(View.GONE);
+        holder.unsaveTrailFab.setVisibility(View.GONE);
+        holder.deleteSavedTrailFab.setVisibility(View.VISIBLE);
+        FirebaseDatabase db = new FirebaseDatabase();
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
+                                         .collection("Saved Trails")
+                                         .whereEqualTo("id", trail.getId());
+        savedTrailQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                holder.deleteSavedTrailFab.setOnClickListener((v) -> {
+                    db.deleteSavedTrailFromList(task.getResult().getDocuments().get(0).getId(), user.getUid(), v.getContext(), this, position);
+                });
             }
         });
     }

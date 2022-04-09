@@ -79,13 +79,13 @@ public class TrailsFragment extends Fragment {
             DocumentReference userRef = firestore.collection("Users").document(user.getUid());
             userRef.get().addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
-                    if(!task.getResult().get("hometown").equals("")) {
+                    if(!task.getResult().get("hometown").equals("hometown")) {
                         List<TrailListDTO> orderedTrails = getTrailsController.getOrderedTrailList(retrievedTrails, task.getResult().get("hometown").toString());
-                        TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), orderedTrails);
+                        TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), orderedTrails, "View Trails Fragment");
                         rvTrailsList.setAdapter(adapter);
                     }
                     else {
-                        TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), retrievedTrails);
+                        TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), retrievedTrails, "View Trails Fragment");
                         rvTrailsList.setAdapter(adapter);
                     }
                 }
