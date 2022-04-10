@@ -1,6 +1,7 @@
 package com.example.hikinghelperni;
 
-import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,10 +72,10 @@ public class LogHikesValidator {
         return name.length() <= MAX_NAME_LENGTH;
     }
 
-    private boolean validateDate(long date) {//using Time as Date and DateTime are older outdated libraries
-        Time formattedDate = new Time(date);
-        Time currentDate = new Time(System.currentTimeMillis());
-        return !formattedDate.after(currentDate);
+    private boolean validateDate(long date) {//using LocalDateTime as Date and DateTime are older outdated libraries
+        LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(date/1000, 0, ZoneOffset.UTC);
+        LocalDateTime currentDate = LocalDateTime.now();
+        return !localDateTime.isAfter(currentDate);
     }
 
     private boolean validateTrailLength(double length) {
