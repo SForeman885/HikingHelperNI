@@ -203,10 +203,10 @@ public class TrailDetailsFragment extends Fragment {
     }
 
     private void setRecommendationDetails(ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion) {
-        LocalDateTime dateRecommendation = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getDateTime(), 0, ZoneOffset.UTC);
+        LocalDateTime dateRecommendation = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getDateTime()/1000, 0, ZoneOffset.UTC);
         binding.trailDetailsTimeRecommendation.trailDetailsRecommendedDate.setText(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(dateRecommendation));
-        LocalDateTime earliestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getEarliestHikeTime(), 0, ZoneOffset.UTC);
-        LocalDateTime latestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getLatestHikeTime(), 0, ZoneOffset.UTC);
+        LocalDateTime earliestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getEarliestHikeTime()/1000, 0, ZoneOffset.UTC);
+        LocalDateTime latestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getLatestHikeTime()/1000, 0, ZoneOffset.UTC);
         String earliestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(earliestTime);
         String latestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(latestTime);
         binding.trailDetailsTimeRecommendation.trailDetailsRecommendedTimesStart.setText(String.format("Earliest start of hike: %s", earliestTimeString));
