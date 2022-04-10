@@ -18,10 +18,13 @@ public class TrailTimeEstimationService {
                                                                 Double averageSpeed,
                                                                 ForecastApiResponse forecastResponse) {
         double timeEstimate = getTimeEstimate(trailDetails, averageSpeed);
+        double timeEstimateRounded = ((double)Math.round(timeEstimate*100))/100; //rounding to 2dp to remove unnecessary accuracy
         ForecastObject forecastDayRecommended = getDayWithBestWeather(forecastResponse);
-        LocalDateTime latestHikeTime = getLatestTimeForHike(timeEstimate, forecastDayRecommended);
+        LocalDateTime latestHikeTime = getLatestTimeForHike(timeEstimateRounded, forecastDayRecommended);
+        //create suggestion object, times are multiplied by 1000 for consistency with other areas of
+        //db which used epochofmilli
         TrailHikeTimeSuggestionDTO suggestion =
-                new TrailHikeTimeSuggestionDTO(forecastDayRecommended.getDt()*1000, timeEstimate,
+                new TrailHikeTimeSuggestionDTO(forecastDayRecommended.getDt()*1000, timeEstimateRounded,
                         trailDetails.getId(), forecastDayRecommended.getSunrise()*1000, latestHikeTime.toEpochSecond(ZoneOffset.UTC)*1000,
                         trailDetails.getLatitude(), trailDetails.getLongitude());
         return new ForecastWithHikeTimeSuggestionDTO(forecastDayRecommended, suggestion);
@@ -33,8 +36,8 @@ public class TrailTimeEstimationService {
         ForecastObject forecastDayRecommended = getDayWithBestWeather(forecastResponse);
         LocalDateTime latestHikeTime = getLatestTimeForHike(timeEstimate, forecastDayRecommended);
         TrailHikeTimeSuggestionDTO suggestion =
-                new TrailHikeTimeSuggestionDTO(forecastDayRecommended.getDt(), timeEstimate,
-                        trailDetails.getId(), forecastDayRecommended.getSunrise(), latestHikeTime.toEpochSecond(ZoneOffset.UTC),
+                new TrailHikeTimeSuggestionDTO(forecastDayRecommended.getDt()*1000, timeEstimate,
+                        trailDetails.getId(), forecastDayRecommended.getSunrise()*1000, latestHikeTime.toEpochSecond(ZoneOffset.UTC)*1000,
                         trailDetails.getLatitude(), trailDetails.getLongitude());
         return new ForecastWithHikeTimeSuggestionDTO(forecastDayRecommended, suggestion);
     }
