@@ -11,7 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +23,7 @@ import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.ViewLogsAdapter;
 import com.example.hikinghelperni.databinding.FragmentViewLogsBinding;
 import com.example.hikinghelperni.ui.log_hikes.LogHikesFragment;
+import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -34,9 +37,13 @@ public class ViewLogsFragment extends Fragment {
     private FragmentViewLogsBinding binding;
     private FirebaseFirestore firestore;
     private FirebaseAuth mFirebaseAuth;
+    private TrailsViewModel trailsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        trailsViewModel = new ViewModelProvider((FragmentActivity)this.getContext()).get(TrailsViewModel.class);
+        //clear trailid to ensure a the user can navigate to create a custom log from this page
+        trailsViewModel.setMTrailId("");
         binding = FragmentViewLogsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         setHasOptionsMenu(true);
@@ -47,6 +54,7 @@ public class ViewLogsFragment extends Fragment {
 
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(false);
+        ab.setTitle("Your Logs");
         if(user != null) {
             RecyclerView rvLoggedHikes = binding.viewLogsRecyclerView;
             GetLoggedHikesController getLoggedHikesController = new GetLoggedHikesController();

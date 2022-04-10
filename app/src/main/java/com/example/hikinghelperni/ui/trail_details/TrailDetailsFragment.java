@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,11 +14,13 @@ import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hikinghelperni.BuildConfig;
+import com.example.hikinghelperni.FirebaseDatabase;
 import com.example.hikinghelperni.ForecastApiResponse;
 import com.example.hikinghelperni.ForecastService;
 import com.example.hikinghelperni.ForecastWithHikeTimeSuggestionDTO;
@@ -26,8 +29,11 @@ import com.example.hikinghelperni.GlideApp;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.TrailDetailsDTO;
 import com.example.hikinghelperni.TrailDetailsForecastAdapter;
+import com.example.hikinghelperni.TrailListDTO;
 import com.example.hikinghelperni.TrailTimeEstimationService;
+import com.example.hikinghelperni.TrailsAdapter;
 import com.example.hikinghelperni.databinding.FragmentTrailDetailsBinding;
+import com.example.hikinghelperni.ui.log_hikes.LogHikesFragment;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -87,11 +94,13 @@ public class TrailDetailsFragment extends Fragment {
         //set back icon and make visible on left of action bar
         ab.setHomeAsUpIndicator(R.drawable.ic_back_arrow_black_24);
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle("Trail Details");
 
         return root;
     }
 
     private void displayTrailDetails(TrailDetailsDTO trailDetails) {
+        FirebaseUser user = mFirebaseAuth.getCurrentUser();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child("trailImages").child(trailDetails.getImageLink());
@@ -118,10 +127,16 @@ public class TrailDetailsFragment extends Fragment {
         GlideApp.with(getContext())
                 .load(mapRef)
                 .into(binding.trailDetailsRouteMapImage);
-        getForecastDataAndHikeRecommendation(trailDetails.getLatitude(), trailDetails.getLongitude());
+        getForecastDataAndHikeRecommendation(user, trailDetails.getLatitude(), trailDetails.getLongitude());
+        if(user != null) {
+            SetUpOptionsButton(user, trailDetails);
+        }
+        else {
+            binding.trailOptionsButton.setVisibility(View.GONE);
+        }
     }
 
-    private void getForecastDataAndHikeRecommendation(Double latitude, Double longitude) {
+    private void getForecastDataAndHikeRecommendation(FirebaseUser user, Double latitude, Double longitude) {
         RecyclerView rvForecast = binding.trailDetailsForecastRecyclerView;
         rvForecast.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.HORIZONTAL, false));
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -149,7 +164,7 @@ public class TrailDetailsFragment extends Fragment {
                 ForecastApiResponse apiResponse = response.body();
                 TrailDetailsForecastAdapter adapter = new TrailDetailsForecastAdapter(apiResponse.getDaily());
                 rvForecast.setAdapter(adapter);
-                displayHikeTimeRecommendation(firestore, trailsViewModel.getMSelectedTrailDetails(), apiResponse);
+                displayHikeTimeRecommendation(user, firestore, trailsViewModel.getMSelectedTrailDetails(), apiResponse);
             }
 
             @Override
@@ -159,40 +174,50 @@ public class TrailDetailsFragment extends Fragment {
         });
     }
 
-    private void displayHikeTimeRecommendation(FirebaseFirestore firestore, TrailDetailsDTO trailDetails, ForecastApiResponse forecastResponse) {
-        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+    private void displayHikeTimeRecommendation(FirebaseUser user, FirebaseFirestore firestore, TrailDetailsDTO trailDetails, ForecastApiResponse forecastResponse) {
+
         TrailTimeEstimationService trailTimeEstimationService = new TrailTimeEstimationService();
         DocumentReference getUserDetails = firestore.collection("Users").document(user.getUid());
-        getUserDetails.get().addOnCompleteListener(task -> {
-            Map<String, Object> userData = task.getResult().getData();
-            if(userData.containsKey("averageSpeed")) {
-                ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion = trailTimeEstimationService.getDateSuggestionForTrail(trailDetails, (Double) task.getResult().get("averageSpeed"), forecastResponse);
-                setRecommendationDetails(trailForecastAndTimeSuggestion);
-                setDisplayCustomized();
-            }
-            else {
-                ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion = trailTimeEstimationService.getUncustomizedDateSuggestionForTrail(trailDetails, forecastResponse);
-                setRecommendationDetails(trailForecastAndTimeSuggestion);
-                setDisplayUncustomized();
-            }
-        });
+        if(user != null) {
+            getUserDetails.get().addOnCompleteListener(task -> {
+                Map<String, Object> userData = task.getResult().getData();
+                if (userData.containsKey("averageSpeed")) {
+                    ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion = trailTimeEstimationService.getDateSuggestionForTrail(trailDetails, (Double) task.getResult().get("averageSpeed"), forecastResponse);
+                    setRecommendationDetails(trailForecastAndTimeSuggestion);
+                    setDisplayCustomized();
+                    SetUpSaveSuggestionButton(trailForecastAndTimeSuggestion);
+                } else {
+                    ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion = trailTimeEstimationService.getUncustomizedDateSuggestionForTrail(trailDetails, forecastResponse);
+                    setRecommendationDetails(trailForecastAndTimeSuggestion);
+                    setDisplayUncustomized();
+                    binding.trailDetailsTimeRecommendation.trailTimeSaveButton.setVisibility(View.GONE);
+                }
+            });
+        }
+        else {
+            ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion = trailTimeEstimationService.getUncustomizedDateSuggestionForTrail(trailDetails, forecastResponse);
+            setRecommendationDetails(trailForecastAndTimeSuggestion);
+            setDisplayUncustomized();
+            binding.trailDetailsTimeRecommendation.trailTimeSaveButton.setVisibility(View.GONE);
+        }
     }
 
     private void setRecommendationDetails(ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion) {
         LocalDateTime dateRecommendation = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getDateTime(), 0, ZoneOffset.UTC);
-        binding.trailDetailsRecommendedDate.setText(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(dateRecommendation));
+        binding.trailDetailsTimeRecommendation.trailDetailsRecommendedDate.setText(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(dateRecommendation));
         LocalDateTime earliestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getEarliestHikeTime(), 0, ZoneOffset.UTC);
         LocalDateTime latestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getLatestHikeTime(), 0, ZoneOffset.UTC);
         String earliestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(earliestTime);
         String latestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(latestTime);
-        binding.trailDetailsRecommendedTimesStart.setText(String.format("Earliest start of hike: %s", earliestTimeString));
-        binding.trailDetailsRecommendedTimesEnd.setText(String.format("Latest start of hike: %s", latestTimeString));
+        binding.trailDetailsTimeRecommendation.trailDetailsRecommendedTimesStart.setText(String.format("Earliest start of hike: %s", earliestTimeString));
+        binding.trailDetailsTimeRecommendation.trailDetailsRecommendedTimesEnd.setText(String.format("Latest start of hike: %s", latestTimeString));
         int timeEstimateHours = (int) (trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getUserTimeEstimate() / 60);
         int timeEstimateMinutes = (int) (trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getUserTimeEstimate() % 60);
-        binding.trailDetailsRecommendedTimeEstimate.setText(String.format("Time to complete: %s hours %s mins", timeEstimateHours, timeEstimateMinutes));
+        binding.trailDetailsTimeRecommendation.trailDetailsRecommendedTimeEstimate.setText(String.format("Time to complete: %s hours %s mins", timeEstimateHours, timeEstimateMinutes));
         String iconURI = String.format("%s:drawable/weather_icon_%s", getContext().getPackageName(), trailForecastAndTimeSuggestion.getSuggestionForecast().getWeather().get(0).getIcon());
         int imageResource = getContext().getResources().getIdentifier(iconURI, null, null);
-        binding.recommendationForecastIconImage.setImageDrawable(getContext().getDrawable(imageResource));
+        binding.trailDetailsTimeRecommendation.recommendationForecastIconImage.setImageDrawable(getContext().getDrawable(imageResource));
+        binding.trailDetailsTimeRecommendation.recommendationForecastIconImage.setBackgroundColor(getResources().getColor(R.color.white, null));
     }
 
     private void setDisplayUncustomized() {
@@ -205,6 +230,76 @@ public class TrailDetailsFragment extends Fragment {
         FloatingActionButton recommendationInfoIcon = binding.recommendationInfoCustomizedIcon;
         recommendationInfoIcon.setVisibility(View.VISIBLE);
         TooltipCompat.setTooltipText(recommendationInfoIcon, getResources().getString(R.string.trail_details_recommended_customized_tooltip));
+    }
+
+    private void SetUpOptionsButton(FirebaseUser user, TrailDetailsDTO trailDetails) {
+        binding.trailOptionsButton.setOnClickListener((v) -> {
+            PopupMenu popupMenu = new PopupMenu(getContext(), v);
+            popupMenu.getMenuInflater().inflate(R.menu.trail_details_top_popup, popupMenu.getMenu());
+            popupMenu.show();
+            //query to check for this trail previously being saved to db
+            Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
+                                             .collection("Saved Trails")
+                                             .whereEqualTo("id", trailDetails.getId());
+            savedTrailQuery.get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    if(!task.getResult().getDocuments().isEmpty()) {
+                        popupMenu.getMenu().getItem(1).setTitle("Unsave Trail");
+                    }
+                    popupMenu.setOnMenuItemClickListener((view) -> {
+                        if (view.getItemId() == R.id.log_hike_to_trail) {
+                            //navigate to the log hikes page which will accept the trail id in the viewmodel
+                            LogHikesFragment nextFragment = new LogHikesFragment();
+                            FragmentManager fragmentManager = getParentFragmentManager();
+                            fragmentManager.beginTransaction()
+                                           .replace(R.id.nav_host_fragment_activity_main, nextFragment)
+                                           .commit();
+                            return true;
+                        } else if (view.getItemId() == R.id.save_trail) {
+                            FirebaseDatabase db = new FirebaseDatabase();
+                            if(task.getResult().getDocuments().isEmpty()) {
+                                TrailListDTO trailToSave = new TrailListDTO(trailDetails.getId(), trailDetails.getTrailName(), trailDetails.getImageLink(), trailDetails.getLocation(), trailDetails.getLatitude(), trailDetails.getLongitude(), trailDetails.getLength(), trailDetails.getDifficulty());
+                                db.addNewSavedTrail(trailToSave.LogMapper(), user.getUid(), getContext());
+                            }
+                            else {
+                                db.deleteSavedTrail(task.getResult().getDocuments().get(0).getId(), user.getUid(), getContext());
+                            }
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            });
+        });
+    }
+
+    private void SetUpSaveSuggestionButton(ForecastWithHikeTimeSuggestionDTO timeSuggestion) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
+                                         .collection("Saved Times")
+                                         .whereEqualTo("trailId", timeSuggestion.getHikeTimeSuggestion().getTrailId())
+                                         .whereEqualTo("date", timeSuggestion.getHikeTimeSuggestion().getDateTime());
+        savedTrailQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                FirebaseDatabase db = new FirebaseDatabase();
+                if (task.getResult().getDocuments().isEmpty()) {
+                    binding.trailDetailsTimeRecommendation.trailTimeSaveButton.setVisibility(View.VISIBLE);
+                    binding.trailDetailsTimeRecommendation.trailTimeUnsaveButton.setVisibility(View.GONE);
+                    binding.trailDetailsTimeRecommendation.trailTimeSaveButton.setOnClickListener((v) -> {
+                        db.addNewSavedTime(timeSuggestion.getHikeTimeSuggestion().LogMapper(), user.getUid(), v.getContext());
+                        SetUpSaveSuggestionButton(timeSuggestion);
+                    });
+                }
+                else {
+                    binding.trailDetailsTimeRecommendation.trailTimeSaveButton.setVisibility(View.GONE);
+                    binding.trailDetailsTimeRecommendation.trailTimeUnsaveButton.setVisibility(View.VISIBLE);
+                    binding.trailDetailsTimeRecommendation.trailTimeUnsaveButton.setOnClickListener((v) -> {
+                        db.deleteSavedTime(task.getResult().getDocuments().get(0).getId(), user.getUid(), v.getContext());
+                        SetUpSaveSuggestionButton(timeSuggestion);
+                    });
+                }
+            }
+        });
     }
 
     @Override

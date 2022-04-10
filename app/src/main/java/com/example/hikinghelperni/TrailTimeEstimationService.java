@@ -21,8 +21,9 @@ public class TrailTimeEstimationService {
         ForecastObject forecastDayRecommended = getDayWithBestWeather(forecastResponse);
         LocalDateTime latestHikeTime = getLatestTimeForHike(timeEstimate, forecastDayRecommended);
         TrailHikeTimeSuggestionDTO suggestion =
-                new TrailHikeTimeSuggestionDTO(forecastDayRecommended.getDt(), timeEstimate,
-                        trailDetails.getId(), forecastDayRecommended.getSunrise(), latestHikeTime.toEpochSecond(ZoneOffset.UTC));
+                new TrailHikeTimeSuggestionDTO(forecastDayRecommended.getDt()*1000, timeEstimate,
+                        trailDetails.getId(), forecastDayRecommended.getSunrise()*1000, latestHikeTime.toEpochSecond(ZoneOffset.UTC)*1000,
+                        trailDetails.getLatitude(), trailDetails.getLongitude());
         return new ForecastWithHikeTimeSuggestionDTO(forecastDayRecommended, suggestion);
     }
 
@@ -33,7 +34,8 @@ public class TrailTimeEstimationService {
         LocalDateTime latestHikeTime = getLatestTimeForHike(timeEstimate, forecastDayRecommended);
         TrailHikeTimeSuggestionDTO suggestion =
                 new TrailHikeTimeSuggestionDTO(forecastDayRecommended.getDt(), timeEstimate,
-                        trailDetails.getId(), forecastDayRecommended.getSunrise(), latestHikeTime.toEpochSecond(ZoneOffset.UTC));
+                        trailDetails.getId(), forecastDayRecommended.getSunrise(), latestHikeTime.toEpochSecond(ZoneOffset.UTC),
+                        trailDetails.getLatitude(), trailDetails.getLongitude());
         return new ForecastWithHikeTimeSuggestionDTO(forecastDayRecommended, suggestion);
     }
 

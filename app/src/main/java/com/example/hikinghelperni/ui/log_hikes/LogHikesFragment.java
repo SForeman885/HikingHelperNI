@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,14 +25,22 @@ import com.example.hikinghelperni.GetLoggedHikesController;
 import com.example.hikinghelperni.LogHikesValidator;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.databinding.FragmentLogHikesBinding;
+import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.example.hikinghelperni.ui.view_logs.ViewLogsFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.time.temporal.TemporalField;
 import java.util.List;
 import java.util.Map;
 
@@ -40,24 +49,34 @@ public class LogHikesFragment extends Fragment {
     private FragmentLogHikesBinding binding;
     private FirebaseDatabase db;
     private FirebaseAuth mFirebaseAuth;
+    private TrailsViewModel trailsViewModel;
+    private String trailId;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         LogHikesViewModel logHikesViewModel = new ViewModelProvider(this).get(LogHikesViewModel.class);
+        trailsViewModel = new ViewModelProvider((FragmentActivity)this.getContext()).get(TrailsViewModel.class);
+        trailId = trailsViewModel.getMTrailId();
 
         binding = FragmentLogHikesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         SetUpDateControl();
-        SetUpDifficultyDropDown();
-        SetUpTrailTypeDropDown();
+        if (trailId.equals("")) {
+            SetUpDifficultyDropDown();
+            SetUpTrailTypeDropDown();
+        }
+        else {
+            binding.customLogDetailsSection.setVisibility(View.GONE);
+        }
         SetUpSubmitButton();
         setHasOptionsMenu(true);
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         //set back icon and make visible on left of action bar
         ab.setHomeAsUpIndicator(R.drawable.ic_back_arrow_black_24);
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle("Log A New Hike");
         return root;
     }
 
@@ -101,33 +120,61 @@ public class LogHikesFragment extends Fragment {
         binding.buttonSubmitLog.setOnClickListener((v) -> {
             db = new FirebaseDatabase();
             FirebaseUser user = mFirebaseAuth.getCurrentUser();
+            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
             if(user != null) {
                 LogHikesValidator validator = new LogHikesValidator();
-                String trailName = binding.editTextTrailName.getText().toString();
-                Long date = binding.dateCalendar.getDate();
-                String length = binding.editTextNumberTrailLength.getText().toString();
+                String hikeName = binding.editTextHikeName.getText().toString();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+                LocalDate selectedDate = LocalDate.parse(binding.editTextDateField.getText().toString(), formatter);
+                Long date = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
                 String hours = binding.editTextNumberHours.getText().toString();
                 String minutes = binding.editTextNumberMinutes.getText().toString();
-                String difficulty = binding.spinnerDifficulty.getSelectedItem().toString();
-                String trailType = binding.spinnerTrailType.getSelectedItem().toString();
-                Map<Integer, String> validatorResponse = validator.validateCustomLog(trailName, date, length, hours, minutes);
-                if (!validatorResponse.isEmpty()) {
-                    for (Integer key : validatorResponse.keySet()) {
-                        EditText textView = v.getRootView().findViewById(key);
-                        textView.setError(validatorResponse.get(key));
-                    }
-                } else {
-                    int hoursValue = hours.isEmpty() ? 0 : Integer.parseInt(hours); //this will handle an empty hours/minutes input from user
-                    int minutesValue = minutes.isEmpty() ? 0 : Integer.parseInt(minutes);
-                    int timeTaken = (hoursValue * 60) + minutesValue;
-                    //if none selected autoselect medium as this option will not affect the speed calculation
-                    if (difficulty.equals("Trail Difficulty")) {
-                        difficulty = "Medium";
-                    }
-                    double elevation = getAveragedTrailElevation(trailType);
+                if(trailId.equals("")) {
+                    String length = binding.editTextNumberTrailLength.getText().toString();
+                    String difficulty = binding.spinnerDifficulty.getSelectedItem().toString();
+                    String trailType = binding.spinnerTrailType.getSelectedItem().toString();
+                    Map<Integer, String> validatorResponse = validator.validateCustomLog(hikeName, date, length, hours, minutes);
+                    if (!validatorResponse.isEmpty()) {
+                        for (Integer key : validatorResponse.keySet()) {
+                            EditText textView = v.getRootView().findViewById(key);
+                            textView.setError(validatorResponse.get(key));
+                        }
+                    } else {
+                        int hoursValue = hours.isEmpty() ? 0 : Integer.parseInt(hours); //this will handle an empty hours/minutes input from user
+                        int minutesValue = minutes.isEmpty() ? 0 : Integer.parseInt(minutes);
+                        int timeTaken = (hoursValue * 60) + minutesValue;
+                        //if none selected autoselect medium as this option will not affect the speed calculation
+                        if (difficulty.equals("Trail Difficulty")) {
+                            difficulty = "Medium";
+                        }
+                        double elevation = getAveragedTrailElevation(trailType);
 
-                    CustomLoggedHikeDTO log = new CustomLoggedHikeDTO(trailName, date, Double.parseDouble(length), elevation, timeTaken, difficulty);
-                    LogHikeAfterCheckingForExistingLogInDB(log, user, v);
+                        CustomLoggedHikeDTO log = new CustomLoggedHikeDTO(hikeName, date, Double.parseDouble(length), elevation, timeTaken, difficulty);
+                        LogHikeAfterCheckingForExistingLogInDB(log, user, firestore, v);
+                    }
+                }
+                else {
+                    //handle add hike for specific trail
+                    Map<Integer, String> validatorResponse = validator.validateTrailLog(hikeName, date, hours, minutes);
+                    if (!validatorResponse.isEmpty()) {
+                        for (Integer key : validatorResponse.keySet()) {
+                            EditText textView = v.getRootView().findViewById(key);
+                            textView.setError(validatorResponse.get(key));
+                        }
+                    } else {
+                        int hoursValue = hours.isEmpty() ? 0 : Integer.parseInt(hours); //this will handle an empty hours/minutes input from user
+                        int minutesValue = minutes.isEmpty() ? 0 : Integer.parseInt(minutes);
+                        int timeTaken = (hoursValue * 60) + minutesValue;
+
+                        DocumentReference trailRef = firestore.collection("Trails").document(trailId);
+                        trailRef.get().addOnCompleteListener(task -> {
+                            if(task.isSuccessful()) {
+                                DocumentSnapshot retrievedDocument = task.getResult();
+                                CustomLoggedHikeDTO log = new CustomLoggedHikeDTO(hikeName, date, retrievedDocument.getDouble("length"), retrievedDocument.getDouble("elevation"), timeTaken, retrievedDocument.get("difficulty").toString());
+                                LogHikeAfterCheckingForExistingLogInDB(log, user, firestore, v);
+                            }
+                        });
+                    }
                 }
             }
             else {
@@ -139,8 +186,7 @@ public class LogHikesFragment extends Fragment {
         });
     }
 
-    public void LogHikeAfterCheckingForExistingLogInDB(CustomLoggedHikeDTO userLog, FirebaseUser user, View v) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    public void LogHikeAfterCheckingForExistingLogInDB(CustomLoggedHikeDTO userLog, FirebaseUser user, FirebaseFirestore firestore, View v) {
         CollectionReference getLogs = firestore.collection("Users").document(user.getUid()).collection("Logs");
         GetLoggedHikesController getLoggedHikesController = new GetLoggedHikesController();
         getLogs.get().addOnCompleteListener(task -> {
@@ -149,18 +195,17 @@ public class LogHikesFragment extends Fragment {
                 if (!retrievedDocuments.isEmpty()) {
                     //Check if the user already has a log saved with the same name
                     List<CustomLoggedHikeDTO> customLoggedHikeDTOList = getLoggedHikesController.getLoggedHikesFromDocuments(retrievedDocuments);
-                    if(!customLoggedHikeDTOList.stream().anyMatch(log -> log.getTrailName().equals(userLog.getTrailName()))) {
+                    if(!customLoggedHikeDTOList.stream().anyMatch(log -> log.getHikeName().equals(userLog.getHikeName()))) {
                         //logMapper() is used to convert the object into a Map that Firebase will accept
-                        db.addNewCustomLog(userLog.LogMapper(), user.getUid());
+                        db.addNewCustomLog(userLog.LogMapper(), user.getUid(), getContext());
                         ViewLogsFragment nextFragment = new ViewLogsFragment();
                         FragmentManager fragmentManager = getParentFragmentManager();
-                        fragmentManager.popBackStack();
                         fragmentManager.beginTransaction()
                                 .replace(R.id.nav_host_fragment_activity_main, nextFragment)
                                 .commit();
                     }
                     else {
-                        EditText textView = v.getRootView().findViewById(R.id.editTextTrailName);
+                        EditText textView = v.getRootView().findViewById(R.id.edit_text_hike_name);
                         textView.setError("Please choose a unique name for the trail");
                     }
                 }

@@ -8,8 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.hikinghelperni.ui.trails.TrailsFragment;
-import com.example.hikinghelperni.ui.view_logs.ViewLogsFragment;
+import com.example.hikinghelperni.ui.profile.ProfileFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -64,8 +63,12 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_profile) {
-            Toast.makeText(MainActivity.this, "you clicked on button1",
-                    Toast.LENGTH_SHORT).show();
+            ProfileFragment nextFragment = new ProfileFragment();
+            FragmentManager navFragmentManager = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
+            navFragmentManager.beginTransaction()
+                           .replace(R.id.nav_host_fragment_activity_main, nextFragment)
+                           .addToBackStack("ToProfileFragment")
+                           .commit();
         }
 
         if (item.getItemId() == R.id.action_sign_out) {
@@ -78,11 +81,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (item.getItemId() == android.R.id.home) {
             FragmentManager navFragmentManager = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
-            int count = navFragmentManager.getBackStackEntryCount();
-            String previousFragmentName = navFragmentManager.getBackStackEntryAt(count - 1).getName();
-            if (previousFragmentName.equals("ViewLogsFragment") || previousFragmentName.equals("TrailsFragment")) {
-                navFragmentManager.popBackStack();
-            }
+            navFragmentManager.popBackStack();
         }
         return false;
     }

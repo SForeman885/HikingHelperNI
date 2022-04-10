@@ -16,23 +16,32 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 import java.util.Locale;
 
-public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder>{
+public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder> {
 
-    private List<TrailListDTO> mTrails;
+    public List<TrailListDTO> mTrails;
     private TrailsViewModel trailsViewModel;
+    private String currentFragment;
 
-    FragmentManager fragmentManager;
+    private FragmentManager fragmentManager;
 
-    public  TrailsAdapter(Context context, FragmentManager _fragmentManager, List<TrailListDTO> trails) {
+    public TrailsAdapter(Context context, FragmentManager _fragmentManager,
+                         List<TrailListDTO> trails, String _currentFragment) {
         mTrails = trails;
-        trailsViewModel = new ViewModelProvider((FragmentActivity) context).get(TrailsViewModel.class);
+        trailsViewModel =
+                new ViewModelProvider((FragmentActivity) context).get(TrailsViewModel.class);
         fragmentManager = _fragmentManager;
+        currentFragment = _currentFragment;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -40,6 +49,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
         public View trailLayoutView;
         public TextView nameTextView, locationTextView, difficultyTextView, lengthTextView;
         public ImageView trailImageView;
+        public FloatingActionButton saveTrailFab, unsaveTrailFab, deleteSavedTrailFab;
 
         // constructor that accepts the entire item row and finds each subview
         public ViewHolder(View itemView) {
@@ -52,6 +62,9 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
             locationTextView = itemView.findViewById(R.id.trail_location);
             lengthTextView = itemView.findViewById(R.id.trail_length);
             difficultyTextView = itemView.findViewById(R.id.trail_difficulty);
+            saveTrailFab = itemView.findViewById(R.id.trail_list_save_button);
+            unsaveTrailFab = itemView.findViewById(R.id.trail_list_unsave_button);
+            deleteSavedTrailFab = itemView.findViewById(R.id.trail_list_delete_button);
             itemView.setOnClickListener(v -> {
                 trailsViewModel.setMTrailId(mTrails.get(getAdapterPosition()).getId());
                 TrailDetailsFragment nextFragment = new TrailDetailsFragment();
@@ -79,35 +92,93 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
 
         // Set item views based on your views and data model
         TextView nameTextView = holder.nameTextView;
-        nameTextView.setText(trail.getTrailName());
+        nameTextView.setText(trail.getName());
         TextView locationTextView = holder.locationTextView;
-        locationTextView.setText(trail.getLocation());
+        locationTextView.setText(trail.getLocationName());
         TextView lengthTextView = holder.lengthTextView;
         lengthTextView.setText(String.format("%skm", trail.getLength()));
         TextView difficultyView = holder.difficultyTextView;
         difficultyView.setText(trail.getDifficulty().toLowerCase(Locale.ROOT));
         //Set colour and appearance of difficulty indicator
         if (trail.getDifficulty().equalsIgnoreCase("easy")) {
-            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_easy));
-        }
-        else if (trail.getDifficulty().equalsIgnoreCase("medium")) {
-            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_medium));
-        }
-        else {
-            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_challenging));
+            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                    R.drawable.difficulty_icon_easy));
+        } else if (trail.getDifficulty().equalsIgnoreCase("medium")) {
+            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                    R.drawable.difficulty_icon_medium));
+        } else {
+            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                    R.drawable.difficulty_icon_challenging));
         }
 
         ImageView trailImageView = holder.trailImageView;
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child("trailImages").child(trail.getImageLink());
-        //Glide with firebaseui allows us to directly access and download image files from firebase storage
+        //Glide with firebaseui allows us to directly access and download image files from
+        // firebase storage
         //And place them into our image view
         GlideApp.with(holder.trailImageView.getContext())
                 .load(imageRef)
                 .into(trailImageView);
+
+        if(currentFragment.equals("Saved Trails")) {
+            SetUpDeleteButton(holder, trail, position);
+        }
+        else {
+            SetUpSaveButton(holder, trail);
+        }
+    }
+
+    private void SetUpSaveButton(ViewHolder holder, TrailListDTO trail) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
+                                         .collection("Saved Trails")
+                                         .whereEqualTo("id", trail.getId());
+        savedTrailQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                FirebaseDatabase db = new FirebaseDatabase();
+                if (task.getResult().getDocuments().isEmpty()) {
+                    holder.saveTrailFab.setVisibility(View.VISIBLE);
+                    holder.unsaveTrailFab.setVisibility(View.GONE);
+                    holder.saveTrailFab.setOnClickListener((v) -> {
+                        db.addNewSavedTrail(trail.LogMapper(), user.getUid(), v.getContext());
+                    });
+                }
+                else {
+                    holder.saveTrailFab.setVisibility(View.GONE);
+                    holder.unsaveTrailFab.setVisibility(View.VISIBLE);
+                    holder.unsaveTrailFab.setOnClickListener((v) -> {
+                        db.deleteSavedTrail(task.getResult().getDocuments().get(0).getId(), user.getUid(), v.getContext());
+                    });
+                }
+                SetUpSaveButton(holder, trail);
+            }
+        });
+    }
+
+    public void SetUpDeleteButton(ViewHolder holder, TrailListDTO trail, int position) {
+        holder.saveTrailFab.setVisibility(View.GONE);
+        holder.unsaveTrailFab.setVisibility(View.GONE);
+        holder.deleteSavedTrailFab.setVisibility(View.VISIBLE);
+        FirebaseDatabase db = new FirebaseDatabase();
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
+                                         .collection("Saved Trails")
+                                         .whereEqualTo("id", trail.getId());
+        savedTrailQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                holder.deleteSavedTrailFab.setOnClickListener((v) -> {
+                    db.deleteSavedTrailFromList(task.getResult().getDocuments().get(0).getId(), user.getUid(), v.getContext(), this, position);
+                });
+            }
+        });
     }
 
     @Override
-    public int getItemCount() { return mTrails.size(); }
+    public int getItemCount() {
+        return mTrails.size();
+    }
 }

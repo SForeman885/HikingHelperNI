@@ -10,7 +10,7 @@ import lombok.Value;
 @Value
 public class CustomLoggedHikeDTO {
 
-    String trailName;
+    String hikeName;
     Long date;
     double length;
     double elevation;

@@ -18,10 +18,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hikinghelperni.GetTrailsController;
+import com.example.hikinghelperni.TrailListDTO;
 import com.example.hikinghelperni.TrailsAdapter;
 import com.example.hikinghelperni.ViewLogsAdapter;
 import com.example.hikinghelperni.databinding.FragmentTrailsBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -32,6 +36,7 @@ public class TrailsFragment extends Fragment {
     private FragmentTrailsBinding binding;
 
     private FirebaseFirestore firestore;
+    private FirebaseAuth mFirebaseAuth;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -42,19 +47,19 @@ public class TrailsFragment extends Fragment {
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         setHasOptionsMenu(true);
         ab.setDisplayHomeAsUpEnabled(false);
+        ab.setTitle("View Trails");
 
         firestore = FirebaseFirestore.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
         RecyclerView rvTrailsList = binding.listTrailsRecyclerView;
-        GetTrailsController getTrailsController = new GetTrailsController();
 
         CollectionReference getTrails = firestore.collection("Trails");
         getTrails.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<DocumentSnapshot> retrievedDocuments = task.getResult().getDocuments();
                 if (!retrievedDocuments.isEmpty()) {
-                    TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), getTrailsController.getTrailsListItemsFromDocuments(retrievedDocuments));
-                    rvTrailsList.setAdapter(adapter);
+                    sortTrailsIfSignedInAndSetAdapter(rvTrailsList, retrievedDocuments);
                 } else {
                     Log.d(this.getClass().toString(), "No Trails Found");
                 }
@@ -64,6 +69,28 @@ public class TrailsFragment extends Fragment {
         });
         rvTrailsList.setLayoutManager(new LinearLayoutManager(this.getContext()));
         return root;
+    }
+
+    private void sortTrailsIfSignedInAndSetAdapter(RecyclerView rvTrailsList, List<DocumentSnapshot> retrievedDocuments) {
+        GetTrailsController getTrailsController = new GetTrailsController();
+        List<TrailListDTO> retrievedTrails = getTrailsController.getTrailsListItemsFromDocuments(retrievedDocuments);
+        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+        if(user != null) {
+            DocumentReference userRef = firestore.collection("Users").document(user.getUid());
+            userRef.get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    if(!task.getResult().get("hometown").equals("hometown")) {
+                        List<TrailListDTO> orderedTrails = getTrailsController.getOrderedTrailList(retrievedTrails, task.getResult().get("hometown").toString());
+                        TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), orderedTrails, "View Trails Fragment");
+                        rvTrailsList.setAdapter(adapter);
+                    }
+                    else {
+                        TrailsAdapter adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), retrievedTrails, "View Trails Fragment");
+                        rvTrailsList.setAdapter(adapter);
+                    }
+                }
+            });
+        }
     }
 
     @Override

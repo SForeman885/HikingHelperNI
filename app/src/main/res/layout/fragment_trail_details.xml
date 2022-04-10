@@ -23,7 +23,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/trails_details_image_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,7 +40,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:scaleType="centerCrop" />
-            </LinearLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/trail_options_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="1dp"
+                    android:layout_gravity="end"
+                    android:layout_alignParentEnd="true"
+                    app:backgroundTint="@color/semi_transparent_black"
+                    app:tint="@android:color/white"
+                    app:fabCustomSize="30dp"
+                    app:srcCompat="@drawable/ic_vert_three_dots_white_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/trails_details_title_layout"
@@ -279,61 +293,10 @@
                         app:srcCompat="@drawable/ic_question_mark_dark_grey_24dp" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="horizontal">
+                <include
+                    android:id="@+id/trail_details_time_recommendation"
+                    layout="@layout/trail_time_recommendation_item" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_weight="7.5"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <TextView
-                            android:id="@+id/trail_details_recommended_date"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/trail_details_recommended_times_start"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/trail_details_recommended_times_end"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/trail_details_recommended_time_estimate"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingBottom="5dp"
-                            android:textSize="20sp" />
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/recommendation_forecast_icon_image"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2.5"
-                        android:scaleType="center" />
-                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
