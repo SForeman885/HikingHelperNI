@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="15dp"
+        android:paddingTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"

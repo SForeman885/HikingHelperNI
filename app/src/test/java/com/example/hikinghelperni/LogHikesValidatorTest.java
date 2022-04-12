@@ -1,5 +1,7 @@
 package com.example.hikinghelperni;
 
+import com.example.hikinghelperni.services.LogHikesValidator;
+
 import org.junit.Before;
 import org.junit.Test;
 

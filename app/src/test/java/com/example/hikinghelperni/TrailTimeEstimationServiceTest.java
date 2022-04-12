@@ -1,5 +1,14 @@
 package com.example.hikinghelperni;
 
+import com.example.hikinghelperni.dto.ForecastWithHikeTimeSuggestionDTO;
+import com.example.hikinghelperni.dto.TrailDetailsDTO;
+import com.example.hikinghelperni.dto.TrailHikeTimeSuggestionDTO;
+import com.example.hikinghelperni.forecast.ForecastApiResponse;
+import com.example.hikinghelperni.forecast.ForecastObject;
+import com.example.hikinghelperni.forecast.TemperatureObject;
+import com.example.hikinghelperni.forecast.WeatherObject;
+import com.example.hikinghelperni.services.TrailTimeEstimationService;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +53,7 @@ public class TrailTimeEstimationServiceTest {
                 "map.png",
                 "trail description",
                 "Newcastle, Down",
+                "Loop",
                 54.1234,
                 6.1234,
                 5,
