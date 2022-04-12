@@ -15,10 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hikinghelperni.FirebaseUIActivity;
-import com.example.hikinghelperni.GetTimeRecommendationsController;
+import com.example.hikinghelperni.services.GetTimeRecommendationsController;
 import com.example.hikinghelperni.R;
-import com.example.hikinghelperni.TimeRecommendationsAdapter;
-import com.example.hikinghelperni.TrailHikeTimeSuggestionDTO;
+import com.example.hikinghelperni.adapter.TimeRecommendationsAdapter;
+import com.example.hikinghelperni.dto.TrailHikeTimeSuggestionDTO;
 import com.example.hikinghelperni.databinding.FragmentSavedTimesBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

@@ -1,5 +1,7 @@
 package com.example.hikinghelperni;
 
+import com.example.hikinghelperni.forecast.ForecastObject;
+
 import lombok.Value;
 
 @Value

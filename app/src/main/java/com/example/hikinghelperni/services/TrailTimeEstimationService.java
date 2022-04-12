@@ -1,5 +1,8 @@
 package com.example.hikinghelperni;
 
+import com.example.hikinghelperni.forecast.ForecastApiResponse;
+import com.example.hikinghelperni.forecast.ForecastObject;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;

@@ -18,9 +18,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.hikinghelperni.GetTrailsController;
-import com.example.hikinghelperni.TrailListDTO;
-import com.example.hikinghelperni.TrailsAdapter;
+import com.example.hikinghelperni.services.GetTrailsController;
+import com.example.hikinghelperni.dto.TrailListDTO;
+import com.example.hikinghelperni.adapter.TrailsAdapter;
 import com.example.hikinghelperni.databinding.FragmentTrailsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class TrailsFragment extends Fragment {
@@ -92,10 +93,13 @@ public class TrailsFragment extends Fragment {
             userRef.get().addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
                     if(!task.getResult().get("hometown").equals("hometown")) {
-                        List<TrailListDTO> orderedTrails = getTrailsController.getOrderedTrailList(retrievedTrails, task.getResult().get("hometown").toString());
-                        adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), orderedTrails, "View Trails Fragment");
+                        List<TrailListDTO> orderedTrails = getTrailsController.getOrderedTrailList(retrievedTrails,
+                                task.getResult().get("hometown").toString());
+                        adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), orderedTrails,
+                                "View Trails Fragment");
                     }
                     else {
+                        retrievedTrails.sort(Comparator.comparing(TrailListDTO::getName));
                         adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), retrievedTrails, "View Trails Fragment");
                     }
                     rvTrailsList.setAdapter(adapter);
@@ -103,6 +107,7 @@ public class TrailsFragment extends Fragment {
             });
         }
         else {
+            retrievedTrails.sort(Comparator.comparing(TrailListDTO::getName));
             adapter = new TrailsAdapter(this.getContext(), getParentFragmentManager(), retrievedTrails, "View Trails Fragment");
             rvTrailsList.setAdapter(adapter);
         }

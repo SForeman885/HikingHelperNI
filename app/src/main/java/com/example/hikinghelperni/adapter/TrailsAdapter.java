@@ -98,7 +98,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
         TextView lengthTextView = holder.lengthTextView;
         lengthTextView.setText(String.format("%skm", trail.getLength()));
         TextView difficultyView = holder.difficultyTextView;
-        difficultyView.setText(trail.getDifficulty().toLowerCase(Locale.ROOT));
+        difficultyView.setText(trail.getDifficulty().toLowerCase());
         //Set colour and appearance of difficulty indicator
         if (trail.getDifficulty().equalsIgnoreCase("easy")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
@@ -180,5 +180,13 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
     @Override
     public int getItemCount() {
         return mTrails.size();
+    }
+
+    public TrailListDTO getItem(int position) {
+        return mTrails.get(position);
+    }
+
+    public void clearItems() {
+        mTrails.clear();
     }
 }

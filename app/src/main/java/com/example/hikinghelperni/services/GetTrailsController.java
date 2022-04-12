@@ -33,6 +33,7 @@ public class GetTrailsController {
     }
 
     public List<TrailListDTO> getOrderedTrailList(List<TrailListDTO> unorderedTrails, String hometown) {
+        //Sorts list of trails in increasing distance from hometown
         HometownEnum hometownValue = HometownEnum.valueOf(hometown.toUpperCase());
         Location userLocation = new Location("");
         userLocation.setLatitude(hometownValue.getLatitude());
