@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,13 +7,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hikinghelperni.FirebaseDatabase;
+import com.example.hikinghelperni.GlideApp;
+import com.example.hikinghelperni.R;
+import com.example.hikinghelperni.dto.TrailListDTO;
 import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,7 +28,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
-import java.util.Locale;
 
 public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder> {
 

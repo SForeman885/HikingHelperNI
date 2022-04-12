@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hikinghelperni.BuildConfig;
+import com.example.hikinghelperni.FirebaseDatabase;
+import com.example.hikinghelperni.R;
+import com.example.hikinghelperni.dto.TrailHikeTimeSuggestionDTO;
 import com.example.hikinghelperni.forecast.ForecastApiResponse;
 import com.example.hikinghelperni.forecast.ForecastService;
 import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
@@ -110,8 +114,8 @@ public class TimeRecommendationsAdapter extends RecyclerView.Adapter<TimeRecomme
                 LocalDateTime.ofEpochSecond(recommendedTime.getLatestHikeTime(), 0, ZoneOffset.UTC);
         String earliestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(earliestTime);
         String latestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(latestTime);
-        earliestTimeTextView.setText(earliestTimeString);
-        latestTimeTextView.setText(latestTimeString);
+        earliestTimeTextView.setText(String.format("Earliest start of hike: %s", earliestTimeString));
+        latestTimeTextView.setText(String.format("Latest start of hike: %s", latestTimeString));
         TextView timeEstimateTextView = holder.timeEstimateTextView;
         int timeEstimateHours = (int) (recommendedTime.getUserTimeEstimate() / 60);
         int timeEstimateMinutes = (int) (recommendedTime.getUserTimeEstimate() % 60);

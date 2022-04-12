@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.dto;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

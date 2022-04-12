@@ -1,5 +1,6 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.dto;
 
+import com.example.hikinghelperni.dto.TrailHikeTimeSuggestionDTO;
 import com.example.hikinghelperni.forecast.ForecastObject;
 
 import lombok.Value;

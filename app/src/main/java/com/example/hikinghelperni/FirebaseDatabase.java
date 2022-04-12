@@ -4,10 +4,9 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
-import com.google.android.gms.tasks.Task;
+import com.example.hikinghelperni.adapter.TimeRecommendationsAdapter;
+import com.example.hikinghelperni.adapter.TrailsAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;

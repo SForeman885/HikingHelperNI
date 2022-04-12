@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.hikinghelperni.dto.CustomLoggedHikeDTO;
+import com.example.hikinghelperni.R;
 
 import java.text.DateFormat;
 import java.util.Date;

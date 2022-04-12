@@ -1,5 +1,6 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.services;
 
+import com.example.hikinghelperni.dto.TrailHikeTimeSuggestionDTO;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;

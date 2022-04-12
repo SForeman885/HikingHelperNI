@@ -1,4 +1,6 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.services;
+
+import com.example.hikinghelperni.R;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
