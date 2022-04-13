@@ -128,13 +128,18 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
             SetUpDeleteButton(holder, trail, position);
         }
         else {
-            SetUpSaveButton(holder, trail);
+            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if(user != null) {
+                SetUpSaveButton(holder, trail, firestore, user);
+            }
+            else {
+                holder.saveTrailFab.setVisibility(View.GONE);
+            }
         }
     }
 
-    private void SetUpSaveButton(ViewHolder holder, TrailListDTO trail) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private void SetUpSaveButton(ViewHolder holder, TrailListDTO trail, FirebaseFirestore firestore, FirebaseUser user) {
         Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
                                          .collection("Saved Trails")
                                          .whereEqualTo("id", trail.getId());
@@ -155,7 +160,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
                         db.deleteSavedTrail(task.getResult().getDocuments().get(0).getId(), user.getUid(), v.getContext());
                     });
                 }
-                SetUpSaveButton(holder, trail);
+                SetUpSaveButton(holder, trail, firestore, user);
             }
         });
     }

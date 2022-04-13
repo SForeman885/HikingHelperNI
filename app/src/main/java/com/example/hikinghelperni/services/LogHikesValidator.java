@@ -27,7 +27,10 @@ public class LogHikesValidator {
         else if(!validateName(name)) {
             validationResult.put(R.id.edit_text_hike_name, INVALID_NAME);
         }
-        if(!validateDate(date)) {
+        if(date == 0L) {
+            validationResult.put(R.id.edit_text_date_field, INVALID_DATE);
+        }
+        else if(!validateDate(date)) {
             validationResult.put(R.id.edit_text_date_field, INVALID_DATE);
         }
         if(length.isEmpty()) {

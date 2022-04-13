@@ -91,7 +91,7 @@ public class TrailTimeEstimationService {
             orderedWeatherListOfBestCondition =
                     orderedWeatherListOfBestCondition.stream()
                                                      .filter(weather ->
-                                                             weather.getTemp().getDay() > 0 || weather.getWind_speed() > 10)
+                                                             weather.getTemp().getDay() > 0 && weather.getWind_speed() <= 10)
                                                      .collect(Collectors.toList());
         }
         return orderedWeatherListOfBestCondition.size() < 1 ? forecastResponse.getDaily().get(0)

@@ -121,8 +121,14 @@ public class LogHikesFragment extends Fragment {
                 LogHikesValidator validator = new LogHikesValidator();
                 String hikeName = binding.editTextHikeName.getText().toString();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu");
-                LocalDate selectedDate = LocalDate.parse(binding.editTextDateField.getText().toString(), formatter);
-                Long date = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+                long date;
+                if(binding.editTextDateField.getText().toString().isEmpty()) {
+                    date = 0L;
+                }
+                else {
+                    LocalDate selectedDate = LocalDate.parse(binding.editTextDateField.getText().toString(), formatter);
+                    date = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+                }
                 String hours = binding.editTextNumberHours.getText().toString();
                 String minutes = binding.editTextNumberMinutes.getText().toString();
                 if(trailId.equals("")) {

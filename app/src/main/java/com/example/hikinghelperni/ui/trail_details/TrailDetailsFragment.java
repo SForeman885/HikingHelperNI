@@ -177,8 +177,8 @@ public class TrailDetailsFragment extends Fragment {
     private void displayHikeTimeRecommendation(FirebaseUser user, FirebaseFirestore firestore, TrailDetailsDTO trailDetails, ForecastApiResponse forecastResponse) {
 
         TrailTimeEstimationService trailTimeEstimationService = new TrailTimeEstimationService();
-        DocumentReference getUserDetails = firestore.collection("Users").document(user.getUid());
         if(user != null) {
+            DocumentReference getUserDetails = firestore.collection("Users").document(user.getUid());
             getUserDetails.get().addOnCompleteListener(task -> {
                 Map<String, Object> userData = task.getResult().getData();
                 if (userData.containsKey("averageSpeed")) {
