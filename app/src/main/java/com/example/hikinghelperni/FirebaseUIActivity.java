@@ -40,7 +40,7 @@ public class FirebaseUIActivity extends AppCompatActivity {
     //setting up signin launcher with listener to handle after signin attempt
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
-            result -> onSignInResult(result)
+            this::onSignInResult
     );
 
     public void createSignInIntent() {

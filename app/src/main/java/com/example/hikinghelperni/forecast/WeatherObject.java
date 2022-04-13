@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.forecast;
 
 import lombok.Value;
 

@@ -23,7 +23,6 @@ public class SavedListsViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public String getPageTitle(int position) {
-
         return fragmentTitles.get(position);
     }
 

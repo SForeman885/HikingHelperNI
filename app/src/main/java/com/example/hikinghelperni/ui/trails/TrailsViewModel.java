@@ -2,7 +2,7 @@ package com.example.hikinghelperni.ui.trails;
 
 import androidx.lifecycle.ViewModel;
 
-import com.example.hikinghelperni.TrailDetailsDTO;
+import com.example.hikinghelperni.dto.TrailDetailsDTO;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.dto;
 
 import lombok.Value;
 
@@ -10,6 +10,7 @@ public class TrailDetailsDTO {
     String mapLink;
     String description;
     String location;
+    String routeType;
     double latitude;
     double longitude;
     double length;

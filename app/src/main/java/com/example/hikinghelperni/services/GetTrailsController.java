@@ -1,7 +1,10 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.services;
 
 import android.location.Location;
 
+import com.example.hikinghelperni.HometownEnum;
+import com.example.hikinghelperni.dto.TrailDetailsDTO;
+import com.example.hikinghelperni.dto.TrailListDTO;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Comparator;
@@ -33,6 +36,7 @@ public class GetTrailsController {
     }
 
     public List<TrailListDTO> getOrderedTrailList(List<TrailListDTO> unorderedTrails, String hometown) {
+        //Sorts list of trails in increasing distance from hometown
         HometownEnum hometownValue = HometownEnum.valueOf(hometown.toUpperCase());
         Location userLocation = new Location("");
         userLocation.setLatitude(hometownValue.getLatitude());
@@ -55,6 +59,7 @@ public class GetTrailsController {
                 retrievedDocument.get("mapLink").toString(),
                 retrievedDocument.get("description").toString(),
                 retrievedDocument.get("locationName").toString(),
+                retrievedDocument.get("routeType").toString(),
                 Double.parseDouble(retrievedDocument.get("latitude").toString()),
                 Double.parseDouble(retrievedDocument.get("longitude").toString()),
                 Double.parseDouble(retrievedDocument.get("length").toString()),

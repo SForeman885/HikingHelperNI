@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,13 +7,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hikinghelperni.FirebaseDatabase;
+import com.example.hikinghelperni.GlideApp;
+import com.example.hikinghelperni.R;
+import com.example.hikinghelperni.dto.TrailListDTO;
 import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,7 +28,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
-import java.util.Locale;
 
 public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder> {
 
@@ -98,7 +100,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
         TextView lengthTextView = holder.lengthTextView;
         lengthTextView.setText(String.format("%skm", trail.getLength()));
         TextView difficultyView = holder.difficultyTextView;
-        difficultyView.setText(trail.getDifficulty().toLowerCase(Locale.ROOT));
+        difficultyView.setText(trail.getDifficulty().toLowerCase());
         //Set colour and appearance of difficulty indicator
         if (trail.getDifficulty().equalsIgnoreCase("easy")) {
             difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
@@ -126,13 +128,18 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
             SetUpDeleteButton(holder, trail, position);
         }
         else {
-            SetUpSaveButton(holder, trail);
+            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if(user != null) {
+                SetUpSaveButton(holder, trail, firestore, user);
+            }
+            else {
+                holder.saveTrailFab.setVisibility(View.GONE);
+            }
         }
     }
 
-    private void SetUpSaveButton(ViewHolder holder, TrailListDTO trail) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private void SetUpSaveButton(ViewHolder holder, TrailListDTO trail, FirebaseFirestore firestore, FirebaseUser user) {
         Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
                                          .collection("Saved Trails")
                                          .whereEqualTo("id", trail.getId());
@@ -153,7 +160,7 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
                         db.deleteSavedTrail(task.getResult().getDocuments().get(0).getId(), user.getUid(), v.getContext());
                     });
                 }
-                SetUpSaveButton(holder, trail);
+                SetUpSaveButton(holder, trail, firestore, user);
             }
         });
     }
@@ -180,5 +187,13 @@ public class TrailsAdapter extends RecyclerView.Adapter<TrailsAdapter.ViewHolder
     @Override
     public int getItemCount() {
         return mTrails.size();
+    }
+
+    public TrailListDTO getItem(int position) {
+        return mTrails.get(position);
+    }
+
+    public void clearItems() {
+        mTrails.clear();
     }
 }

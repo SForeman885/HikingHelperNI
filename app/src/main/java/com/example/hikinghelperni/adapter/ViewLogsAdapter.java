@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.hikinghelperni.dto.CustomLoggedHikeDTO;
+import com.example.hikinghelperni.R;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -75,16 +78,19 @@ public class ViewLogsAdapter extends RecyclerView.Adapter<ViewLogsAdapter.ViewHo
             timeTakenView.setText(String.format("Time: %s minutes", log.getTimeTaken()));
         }
         TextView difficultyView = holder.difficultyTextView;
-        difficultyView.setText(log.getDifficulty());
+        difficultyView.setText(log.getDifficulty().toLowerCase());
         //Set colour and appearance of difficulty indicator
         if (log.getDifficulty().equalsIgnoreCase("easy")) {
-            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_easy));
+            difficultyView.setBackground(
+                    ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_easy));
         }
         else if (log.getDifficulty().equalsIgnoreCase("medium")) {
-            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_medium));
+            difficultyView.setBackground(
+                    ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_medium));
         }
         else {
-            difficultyView.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_challenging));
+            difficultyView.setBackground(
+                    ContextCompat.getDrawable(holder.itemView.getContext(),R.drawable.difficulty_icon_challenging));
         }
     }
 

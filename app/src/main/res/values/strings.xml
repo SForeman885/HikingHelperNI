@@ -26,8 +26,8 @@
     <string name="trail_route_type_label">Route Type</string>
     <string name="trail_details_forecast_label">Weather Forecast</string>
     <string name="trail_details_recommended_hike_date_label">Recommended Hike Date:</string>
-    <string name="trail_details_recommended_customized_tooltip">This recommendation uses your previous hikes logged on your account for a more accurate suggestion</string>
-    <string name="trail_details_recommended_not_customized_tooltip">This can be more useful by creating an account and logging at least 2 of your previous hikes</string>
+    <string name="trail_details_recommended_customized_tooltip">This recommendation uses your previous hikes on your account for a more accurate suggestion</string>
+    <string name="trail_details_recommended_not_customized_tooltip">This can be more useful by creating an account and logging at least 2 previous hikes</string>
     <string name="hometown_label">Please select your nearest town from the list</string>
     <string name="save_button_label">Save</string>
     <string name="total_distance_hiked_label">Total Distance Hiked</string>

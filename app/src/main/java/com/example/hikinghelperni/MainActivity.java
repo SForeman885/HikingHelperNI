@@ -64,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_profile) {
             ProfileFragment nextFragment = new ProfileFragment();
-            FragmentManager navFragmentManager = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
+            FragmentManager navFragmentManager = getSupportFragmentManager()
+                    .findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
             navFragmentManager.beginTransaction()
                            .replace(R.id.nav_host_fragment_activity_main, nextFragment)
                            .addToBackStack("ToProfileFragment")
@@ -80,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         if (item.getItemId() == android.R.id.home) {
-            FragmentManager navFragmentManager = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
+            FragmentManager navFragmentManager = getSupportFragmentManager()
+                    .findFragmentById(R.id.nav_host_fragment_activity_main).getChildFragmentManager();
             navFragmentManager.popBackStack();
         }
         return false;

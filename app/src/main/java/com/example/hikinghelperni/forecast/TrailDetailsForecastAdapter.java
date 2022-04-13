@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.forecast;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,8 +9,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hikinghelperni.R;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -49,11 +52,10 @@ public class TrailDetailsForecastAdapter extends RecyclerView.Adapter<TrailDetai
     @Override
     public void onBindViewHolder(TrailDetailsForecastAdapter.ViewHolder holder, int position) {
         ForecastObject dayForecast = mDaysForecasted.get(position);
-        DayOfWeek currentDay = LocalDateTime.now().getDayOfWeek();
-        currentDay.getDisplayName(TextStyle.FULL, Locale.UK);
+        DayOfWeek dayForecasted = LocalDateTime.ofEpochSecond(dayForecast.getDt(), 0, ZoneOffset.UTC).getDayOfWeek();
 
         TextView dayTextView = holder.dayTextView;
-        dayTextView.setText(currentDay.plus(position).getDisplayName(TextStyle.FULL, Locale.UK));
+        dayTextView.setText(dayForecasted.getDisplayName(TextStyle.FULL, Locale.UK));
         TextView descriptionTextView = holder.descriptionTextView;
         descriptionTextView.setText(dayForecast.getWeather().get(0).getDescription());
         ImageView iconView = holder.iconImageView;

@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hikinghelperni.FirebaseUIActivity;
-import com.example.hikinghelperni.GetTrailsController;
+import com.example.hikinghelperni.services.GetTrailsController;
 import com.example.hikinghelperni.R;
-import com.example.hikinghelperni.TrailListDTO;
-import com.example.hikinghelperni.TrailsAdapter;
+import com.example.hikinghelperni.dto.TrailListDTO;
+import com.example.hikinghelperni.adapter.TrailsAdapter;
 import com.example.hikinghelperni.databinding.FragmentSavedTrailsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

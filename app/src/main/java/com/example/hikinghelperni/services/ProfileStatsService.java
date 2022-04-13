@@ -1,4 +1,7 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.services;
+
+import com.example.hikinghelperni.dto.CustomLoggedHikeDTO;
+import com.example.hikinghelperni.dto.ProfileStatsDTO;
 
 import java.util.List;
 

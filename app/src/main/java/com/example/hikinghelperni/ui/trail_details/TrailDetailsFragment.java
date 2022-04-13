@@ -21,17 +21,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hikinghelperni.BuildConfig;
 import com.example.hikinghelperni.FirebaseDatabase;
-import com.example.hikinghelperni.ForecastApiResponse;
-import com.example.hikinghelperni.ForecastService;
-import com.example.hikinghelperni.ForecastWithHikeTimeSuggestionDTO;
-import com.example.hikinghelperni.GetTrailsController;
+import com.example.hikinghelperni.forecast.ForecastApiResponse;
+import com.example.hikinghelperni.forecast.ForecastService;
+import com.example.hikinghelperni.dto.ForecastWithHikeTimeSuggestionDTO;
+import com.example.hikinghelperni.services.GetTrailsController;
 import com.example.hikinghelperni.GlideApp;
 import com.example.hikinghelperni.R;
-import com.example.hikinghelperni.TrailDetailsDTO;
-import com.example.hikinghelperni.TrailDetailsForecastAdapter;
-import com.example.hikinghelperni.TrailListDTO;
-import com.example.hikinghelperni.TrailTimeEstimationService;
-import com.example.hikinghelperni.TrailsAdapter;
+import com.example.hikinghelperni.dto.TrailDetailsDTO;
+import com.example.hikinghelperni.forecast.TrailDetailsForecastAdapter;
+import com.example.hikinghelperni.dto.TrailListDTO;
+import com.example.hikinghelperni.services.TrailTimeEstimationService;
 import com.example.hikinghelperni.databinding.FragmentTrailDetailsBinding;
 import com.example.hikinghelperni.ui.log_hikes.LogHikesFragment;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
@@ -48,7 +47,6 @@ import com.google.firebase.storage.StorageReference;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.OkHttpClient;
@@ -109,7 +107,7 @@ public class TrailDetailsFragment extends Fragment {
                 .into(binding.trailDetailsImage);
         binding.trailDetailsName.setText(trailDetails.getTrailName());
         TextView difficultyView = binding.trailDetailsDifficulty;
-        difficultyView.setText(trailDetails.getDifficulty().toLowerCase(Locale.ROOT));
+        difficultyView.setText(trailDetails.getDifficulty().toLowerCase());
         if (trailDetails.getDifficulty().equalsIgnoreCase("easy")) {
             difficultyView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.difficulty_icon_easy));
         }
@@ -120,6 +118,7 @@ public class TrailDetailsFragment extends Fragment {
             difficultyView.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.difficulty_icon_challenging));
         }
         binding.trailDetailsLocation.setText(trailDetails.getLocation());
+        binding.trailDetailsRouteType.setText(trailDetails.getRouteType());
         binding.expandTextView.setText(trailDetails.getDescription());
         binding.trailDetailsLength.setText(String.format("%s", trailDetails.getLength()));
         binding.trailDetailsElevation.setText(String.format("%s", trailDetails.getElevation()));
@@ -164,7 +163,8 @@ public class TrailDetailsFragment extends Fragment {
                 ForecastApiResponse apiResponse = response.body();
                 TrailDetailsForecastAdapter adapter = new TrailDetailsForecastAdapter(apiResponse.getDaily());
                 rvForecast.setAdapter(adapter);
-                displayHikeTimeRecommendation(user, firestore, trailsViewModel.getMSelectedTrailDetails(), apiResponse);
+                displayHikeTimeRecommendation(user, firestore,
+                        trailsViewModel.getMSelectedTrailDetails(), apiResponse);
             }
 
             @Override
@@ -177,8 +177,8 @@ public class TrailDetailsFragment extends Fragment {
     private void displayHikeTimeRecommendation(FirebaseUser user, FirebaseFirestore firestore, TrailDetailsDTO trailDetails, ForecastApiResponse forecastResponse) {
 
         TrailTimeEstimationService trailTimeEstimationService = new TrailTimeEstimationService();
-        DocumentReference getUserDetails = firestore.collection("Users").document(user.getUid());
         if(user != null) {
+            DocumentReference getUserDetails = firestore.collection("Users").document(user.getUid());
             getUserDetails.get().addOnCompleteListener(task -> {
                 Map<String, Object> userData = task.getResult().getData();
                 if (userData.containsKey("averageSpeed")) {
@@ -203,10 +203,10 @@ public class TrailDetailsFragment extends Fragment {
     }
 
     private void setRecommendationDetails(ForecastWithHikeTimeSuggestionDTO trailForecastAndTimeSuggestion) {
-        LocalDateTime dateRecommendation = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getDateTime(), 0, ZoneOffset.UTC);
+        LocalDateTime dateRecommendation = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getDateTime()/1000, 0, ZoneOffset.UTC);
         binding.trailDetailsTimeRecommendation.trailDetailsRecommendedDate.setText(DateTimeFormatter.ofPattern("dd-MM-yyyy").format(dateRecommendation));
-        LocalDateTime earliestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getEarliestHikeTime(), 0, ZoneOffset.UTC);
-        LocalDateTime latestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getLatestHikeTime(), 0, ZoneOffset.UTC);
+        LocalDateTime earliestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getEarliestHikeTime()/1000, 0, ZoneOffset.UTC);
+        LocalDateTime latestTime = LocalDateTime.ofEpochSecond(trailForecastAndTimeSuggestion.getHikeTimeSuggestion().getLatestHikeTime()/1000, 0, ZoneOffset.UTC);
         String earliestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(earliestTime);
         String latestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(latestTime);
         binding.trailDetailsTimeRecommendation.trailDetailsRecommendedTimesStart.setText(String.format("Earliest start of hike: %s", earliestTimeString));
@@ -278,7 +278,7 @@ public class TrailDetailsFragment extends Fragment {
         Query savedTrailQuery = firestore.collection("Users").document(user.getUid())
                                          .collection("Saved Times")
                                          .whereEqualTo("trailId", timeSuggestion.getHikeTimeSuggestion().getTrailId())
-                                         .whereEqualTo("date", timeSuggestion.getHikeTimeSuggestion().getDateTime());
+                                         .whereEqualTo("dateTime", timeSuggestion.getHikeTimeSuggestion().getDateTime());
         savedTrailQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 FirebaseDatabase db = new FirebaseDatabase();

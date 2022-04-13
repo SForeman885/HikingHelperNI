@@ -19,10 +19,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.hikinghelperni.CustomLoggedHikeDTO;
+import com.example.hikinghelperni.dto.CustomLoggedHikeDTO;
 import com.example.hikinghelperni.FirebaseDatabase;
-import com.example.hikinghelperni.GetLoggedHikesController;
-import com.example.hikinghelperni.LogHikesValidator;
+import com.example.hikinghelperni.services.GetLoggedHikesController;
+import com.example.hikinghelperni.services.LogHikesValidator;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.databinding.FragmentLogHikesBinding;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
@@ -34,13 +34,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.format.ResolverStyle;
-import java.time.temporal.TemporalField;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +52,6 @@ public class LogHikesFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        LogHikesViewModel logHikesViewModel = new ViewModelProvider(this).get(LogHikesViewModel.class);
         trailsViewModel = new ViewModelProvider((FragmentActivity)this.getContext()).get(TrailsViewModel.class);
         trailId = trailsViewModel.getMTrailId();
 
@@ -125,8 +122,14 @@ public class LogHikesFragment extends Fragment {
                 LogHikesValidator validator = new LogHikesValidator();
                 String hikeName = binding.editTextHikeName.getText().toString();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu");
-                LocalDate selectedDate = LocalDate.parse(binding.editTextDateField.getText().toString(), formatter);
-                Long date = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+                long date;
+                if(binding.editTextDateField.getText().toString().isEmpty()) {
+                    date = 0L;
+                }
+                else {
+                    LocalDate selectedDate = LocalDate.parse(binding.editTextDateField.getText().toString(), formatter);
+                    date = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+                }
                 String hours = binding.editTextNumberHours.getText().toString();
                 String minutes = binding.editTextNumberMinutes.getText().toString();
                 if(trailId.equals("")) {
@@ -208,6 +211,15 @@ public class LogHikesFragment extends Fragment {
                         EditText textView = v.getRootView().findViewById(R.id.edit_text_hike_name);
                         textView.setError("Please choose a unique name for the trail");
                     }
+                }
+                else {
+                    //if no logs exist then we are free to make a new one
+                    db.addNewCustomLog(userLog.LogMapper(), user.getUid(), getContext());
+                    ViewLogsFragment nextFragment = new ViewLogsFragment();
+                    FragmentManager fragmentManager = getParentFragmentManager();
+                    fragmentManager.beginTransaction()
+                                   .replace(R.id.nav_host_fragment_activity_main, nextFragment)
+                                   .commit();
                 }
             } else {
                 Log.d(this.getClass().toString(), "getting logs failed with ", task.getException());

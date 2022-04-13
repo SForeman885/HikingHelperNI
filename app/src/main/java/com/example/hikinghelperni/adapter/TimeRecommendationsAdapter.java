@@ -1,4 +1,4 @@
-package com.example.hikinghelperni;
+package com.example.hikinghelperni.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hikinghelperni.BuildConfig;
+import com.example.hikinghelperni.FirebaseDatabase;
+import com.example.hikinghelperni.R;
+import com.example.hikinghelperni.dto.TrailHikeTimeSuggestionDTO;
+import com.example.hikinghelperni.forecast.ForecastApiResponse;
+import com.example.hikinghelperni.forecast.ForecastObject;
+import com.example.hikinghelperni.forecast.ForecastService;
 import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,6 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -108,8 +116,8 @@ public class TimeRecommendationsAdapter extends RecyclerView.Adapter<TimeRecomme
                 LocalDateTime.ofEpochSecond(recommendedTime.getLatestHikeTime(), 0, ZoneOffset.UTC);
         String earliestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(earliestTime);
         String latestTimeString = DateTimeFormatter.ofPattern("HH:mm").format(latestTime);
-        earliestTimeTextView.setText(earliestTimeString);
-        latestTimeTextView.setText(latestTimeString);
+        earliestTimeTextView.setText(String.format("Earliest start of hike: %s", earliestTimeString));
+        latestTimeTextView.setText(String.format("Latest start of hike: %s", latestTimeString));
         TextView timeEstimateTextView = holder.timeEstimateTextView;
         int timeEstimateHours = (int) (recommendedTime.getUserTimeEstimate() / 60);
         int timeEstimateMinutes = (int) (recommendedTime.getUserTimeEstimate() % 60);
@@ -138,8 +146,8 @@ public class TimeRecommendationsAdapter extends RecyclerView.Adapter<TimeRecomme
             public void onResponse(Call<ForecastApiResponse> call,
                                    Response<ForecastApiResponse> response) {
                 ForecastApiResponse apiResponse = response.body();
-                apiResponse.getDaily().stream().filter(forecast -> forecast.getDt() == (recommendedTime.getDateTime() / 1000));
-                String icon = apiResponse.getDaily().get(0).getWeather().get(0).getIcon();
+                List<ForecastObject> filteredApiResponse = apiResponse.getDaily().stream().filter(forecast -> forecast.getDt() == (recommendedTime.getDateTime() / 1000)).collect(Collectors.toList());
+                String icon = filteredApiResponse.get(0).getWeather().get(0).getIcon();
                 String iconURI = String.format("%s:drawable/weather_icon_%s",
                         holder.itemView.getContext().getPackageName(), icon);
                 int imageResource =

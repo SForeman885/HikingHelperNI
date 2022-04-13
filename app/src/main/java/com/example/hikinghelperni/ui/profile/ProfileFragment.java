@@ -8,18 +8,19 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.hikinghelperni.CustomLoggedHikeDTO;
+import com.example.hikinghelperni.dto.CustomLoggedHikeDTO;
 import com.example.hikinghelperni.FirebaseDatabase;
 import com.example.hikinghelperni.FirebaseUIActivity;
-import com.example.hikinghelperni.GetLoggedHikesController;
-import com.example.hikinghelperni.ProfileStatsDTO;
-import com.example.hikinghelperni.ProfileStatsService;
+import com.example.hikinghelperni.services.GetLoggedHikesController;
+import com.example.hikinghelperni.dto.ProfileStatsDTO;
+import com.example.hikinghelperni.services.ProfileStatsService;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.databinding.FragmentProfileBinding;
 import com.google.firebase.auth.FirebaseAuth;
@@ -135,10 +136,13 @@ public class ProfileFragment extends Fragment {
     private void SetUpSaveButton() {
         binding.buttonSaveProfile.setOnClickListener((v) -> {
             String selectedHometown = binding.spinnerHometown.getSelectedItem().toString();
-            if (!selectedHometown.equals("")) {
+            if (!selectedHometown.equals("Select A Town:")) {
                 FirebaseUser user = mFirebaseAuth.getCurrentUser();
                 FirebaseDatabase database = new FirebaseDatabase();
                 database.updateUserHometown(user.getUid(), selectedHometown, getContext());
+            }
+            else {
+                Toast.makeText(getContext(), "Please select a hometown", Toast.LENGTH_SHORT).show();
             }
         });
     }
