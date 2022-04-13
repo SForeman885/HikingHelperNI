@@ -17,6 +17,7 @@ import com.example.hikinghelperni.FirebaseDatabase;
 import com.example.hikinghelperni.R;
 import com.example.hikinghelperni.dto.TrailHikeTimeSuggestionDTO;
 import com.example.hikinghelperni.forecast.ForecastApiResponse;
+import com.example.hikinghelperni.forecast.ForecastObject;
 import com.example.hikinghelperni.forecast.ForecastService;
 import com.example.hikinghelperni.ui.trail_details.TrailDetailsFragment;
 import com.example.hikinghelperni.ui.trails.TrailsViewModel;
@@ -34,6 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -144,8 +146,8 @@ public class TimeRecommendationsAdapter extends RecyclerView.Adapter<TimeRecomme
             public void onResponse(Call<ForecastApiResponse> call,
                                    Response<ForecastApiResponse> response) {
                 ForecastApiResponse apiResponse = response.body();
-                apiResponse.getDaily().stream().filter(forecast -> forecast.getDt() == (recommendedTime.getDateTime() / 1000));
-                String icon = apiResponse.getDaily().get(0).getWeather().get(0).getIcon();
+                List<ForecastObject> filteredApiResponse = apiResponse.getDaily().stream().filter(forecast -> forecast.getDt() == (recommendedTime.getDateTime() / 1000)).collect(Collectors.toList());
+                String icon = filteredApiResponse.get(0).getWeather().get(0).getIcon();
                 String iconURI = String.format("%s:drawable/weather_icon_%s",
                         holder.itemView.getContext().getPackageName(), icon);
                 int imageResource =

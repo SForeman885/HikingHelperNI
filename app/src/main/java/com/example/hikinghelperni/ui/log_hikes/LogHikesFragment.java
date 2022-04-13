@@ -34,6 +34,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -210,6 +211,15 @@ public class LogHikesFragment extends Fragment {
                         EditText textView = v.getRootView().findViewById(R.id.edit_text_hike_name);
                         textView.setError("Please choose a unique name for the trail");
                     }
+                }
+                else {
+                    //if no logs exist then we are free to make a new one
+                    db.addNewCustomLog(userLog.LogMapper(), user.getUid(), getContext());
+                    ViewLogsFragment nextFragment = new ViewLogsFragment();
+                    FragmentManager fragmentManager = getParentFragmentManager();
+                    fragmentManager.beginTransaction()
+                                   .replace(R.id.nav_host_fragment_activity_main, nextFragment)
+                                   .commit();
                 }
             } else {
                 Log.d(this.getClass().toString(), "getting logs failed with ", task.getException());

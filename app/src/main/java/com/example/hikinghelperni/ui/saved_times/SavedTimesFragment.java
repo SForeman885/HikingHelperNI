@@ -54,7 +54,7 @@ public class SavedTimesFragment extends Fragment {
                     if (!retrievedDocuments.isEmpty()) {
                         SortSavedTrailsAndSetAdapter(rvSavedTimesList, retrievedDocuments);
                     } else {
-                        Log.d(this.getClass().toString(), "No Trails Found");
+                        Log.d(this.getClass().toString(), "No Time Reommendations Found");
                         binding.listSavedTimesScrollView.setVisibility(View.GONE);
                         binding.noSavedTimesMessage.setVisibility(View.VISIBLE);
                     }
